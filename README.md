@@ -11,6 +11,11 @@ Featuring:
 [ ] Set the disk to readonly?
 [ ] Set up OpenVPN?
 
+## Usage
+
+1. Install qemu and wget: `brew install qemu wget`.
+2. Run `make`
+3. The resulting disk image can be found in `dist`.
 
 ## References
 
