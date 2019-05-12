@@ -46,7 +46,7 @@ dist/raspbian_lite.img: ${RPI_FS} ${PTB_FILE} ${RPI_KERNEL}
 	while read line; do \
 		echo "$${line}" | grep -q 'My IP address is' && break; \
 	done < ${TMP_DIR}/output && \
-	echo ">>> Logging and turning on SSH..." && \
+	echo ">>> Logging in and turning on SSH..." && \
 	sleep 20 && \
 	printf "pi\n" > build/pipe.in && \
 	sleep 2 && \
@@ -61,3 +61,12 @@ dist/raspbian_lite.img: ${RPI_FS} ${PTB_FILE} ${RPI_KERNEL}
 	echo ">>> Moving image to dist..." && \
 	rm -f ${TMP_DIR}/pipe.in ${TMP_DIR}/pipe.out ${TMP_DIR}/output && \
 	mv ${TMP_DIR}/raspbian_lite.tmp.img dist/raspbian_lite.img
+
+.PHONY: boot
+boot: dist/raspbian_lite.img ${PTB_FILE} ${RPI_KERNEL}
+	${QEMU} -kernel ${RPI_KERNEL} \
+		-cpu arm1176 -m 256 -M versatilepb \
+		-dtb ${PTB_FILE} -no-reboot \
+		-append "root=/dev/sda2 panic=1 rootfstype=ext4 rw" \
+		-drive "file=dist/raspbian_lite.img,index=0,media=disk,format=raw" \
+		-net user,hostfwd=tcp::5022-:22 -net nic -pidfile ${TMP_DIR}/qemu.pid -serial mon:stdio
