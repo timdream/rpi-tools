@@ -1,2 +1,4 @@
 /dist
 /build
+/backup
+/known_hosts

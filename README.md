@@ -28,7 +28,7 @@ After getting your Raspberry Pi booted up and SSH turned on, do this
 to execute `bootstrap.sh` on it.
 
 ```
-ssh pi@raspberrypi.local bash < ./bootstrap.sh
+ssh pi@raspberrypi.local -o UserKnownHostsFile=./known_hosts bash < ./bootstrap.sh
 ```
 
 ## References
