@@ -76,7 +76,12 @@ echo ">> Install /sbin/remount" && \
 # if it was set read-write manually.
 echo "#!/bin/bash
 
-[ -z \"\$1\" ] && echo \"Usage: remount [ro|rw] [tag]\" && exit 1
+if [ -z \"\$1\" ]; then
+    echo \"Usage: remount ro|rw [tag]\"
+    echo -n \"Currently mount options: \"
+    awk '\$2 == \"/\" {print \$4}' /etc/mtab
+    exit 1
+fi
 
 TAG=\${2:-user}
 
