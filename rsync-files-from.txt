@@ -1,0 +1,8 @@
+/home/pi/client.ovpn
+/etc/openvpn
+/etc/cron.hourly/vpn
+/etc/cron.hourly/gist
+/etc/rc.local
+/etc/ssh
+/etc/default/deluged
+/var/lib/deluged/config
