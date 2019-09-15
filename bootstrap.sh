@@ -78,7 +78,7 @@ echo "#!/bin/bash
 
 if [ -z \"\$1\" ]; then
     echo \"Usage: remount ro|rw [tag]\"
-    echo -n \"Currently mount options: \"
+    echo -n \"Current mount options: \"
     awk '\$2 == \"/\" {print \$4}' /etc/mtab
     exit 1
 fi
