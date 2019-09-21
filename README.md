@@ -13,16 +13,7 @@ Featuring:
 
 ## Usage
 
-### QEMU image
-
-1. Install qemu and wget: `brew install qemu wget`.
-2. Run `make`
-3. The resulting disk image can be found in `dist`.
-
 ### bootstrap.sh
-
-It turned out you cannot put an image booted with QEMU to and SD card.
-So everything needs to be done should be done on the actual machine.
 
 After getting your Raspberry Pi booted up and SSH turned on, do this
 to execute `bootstrap.sh` on it.
@@ -30,6 +21,16 @@ to execute `bootstrap.sh` on it.
 ```
 ssh pi@raspberrypi.local -o UserKnownHostsFile=./known_hosts bash < ./bootstrap.sh
 ```
+
+### QEMU image
+
+This part of the tool allow you to quickly emulate a device without having access to an actual device.
+The resulting image cannot be flashed into an SD card.
+
+1. Install qemu and wget: `brew install qemu wget`.
+2. Run `make`
+3. The resulting disk image can be found in `dist`.
+4. Boot up the device with `make boot`.
 
 ## References
 
