@@ -30,6 +30,14 @@ Setup an OpenVPN environment. Expects two OpenVPN configs at `/etc/openvpn/serve
 ssh pi@raspberrypi.local -o UserKnownHostsFile=./known_hosts bash < ./openvpn.sh
 ```
 
+### gist.sh
+
+Setup an hourly crontab to run a script from GitHub Gist.
+
+```
+ssh pi@raspberrypi.local -o UserKnownHostsFile=./known_hosts bash < ./gist.sh
+```
+
 ### wifi.sh
 
 Not really useful if you already have connectivity to it. Just a note on how to modify the disk image to enable Wifi before first boot.
