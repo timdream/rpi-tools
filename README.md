@@ -30,6 +30,10 @@ Setup an OpenVPN environment. Expects two OpenVPN configs at `/etc/openvpn/serve
 ssh pi@raspberrypi.local -o UserKnownHostsFile=./known_hosts bash < ./openvpn.sh
 ```
 
+### wifi.sh
+
+Not really useful if you already have connectivity to it. Just a note on how to modify the disk image to enable Wifi before first boot.
+
 ### QEMU image
 
 This part of the tool allow you to quickly emulate a device without having access to an actual device.
