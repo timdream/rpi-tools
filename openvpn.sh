@@ -43,7 +43,7 @@ curl -s \"https://dynamicdns.park-your-domain.com/update?host=_________&domain=_
 echo >> /var/log/vpn.log
 
 # uPnP (SSH & OpenVPN UDP + TCP)
-if [[ -z \"\$(ssh-keyscan -p 8022 \$__EXTERNAL_IP\" ]]; then
+if [[ -z \"\$(ssh-keyscan -p 8022 \$__EXTERNAL_IP 2>/dev/null)\" ]]; then
   upnpc -d 8022 TCP >> /var/log/vpn.log
   upnpc -d 28022 TCP >> /var/log/vpn.log
   upnpc -d 443 TCP >> /var/log/vpn.log
