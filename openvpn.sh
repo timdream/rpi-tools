@@ -39,8 +39,8 @@ printf \"External IP: %s\n\" \"\$__EXTERNAL_IP\" >> /var/log/vpn.log
 
 # Dynamic DNS
 echo -n \"Dynamic DNS: \" >> /tmp/vpn.log
-curl -s \"https://dynamicdns.park-your-domain.com/update?host=_________&domain=____________&password=___________________\" >> /tmp/vpn.log
-echo >> /tmp/vpn.log
+curl -s \"https://dynamicdns.park-your-domain.com/update?host=_________&domain=____________&password=___________________\" >> /var/log/vpn.log
+echo >> /var/log/vpn.log
 
 # uPnP (SSH & OpenVPN UDP + TCP)
 if [[ -z \"\$(ssh-keyscan -p 8022 \$__EXTERNAL_IP\" ]]; then
