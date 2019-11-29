@@ -9,7 +9,7 @@ Featuring:
 [v] Fetch the image and boot it up in Qemu
 [v] Execute some command on the image in Qemu
 [v] Set the disk to readonly
-[ ] Set up OpenVPN?
+[v] Set up OpenVPN (partly manual)
 
 ## Usage
 
@@ -20,6 +20,14 @@ to execute `bootstrap.sh` on it.
 
 ```
 ssh pi@raspberrypi.local -o UserKnownHostsFile=./known_hosts bash < ./bootstrap.sh
+```
+
+### openvpn.sh
+
+Setup an OpenVPN environment. Expects two OpenVPN configs at `/etc/openvpn/server-udp.conf` and `/etc/openvpn/server.conf`. Please modify the script to add your own Dynamic DNS secret and change the assumptions before running.
+
+```
+ssh pi@raspberrypi.local -o UserKnownHostsFile=./known_hosts bash < ./openvpn.sh
 ```
 
 ### QEMU image
