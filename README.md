@@ -39,10 +39,13 @@ We will setup two daemons so the service will be available over TCP and UDP.
 To do that:
 
 1. Run [openvpn-install](https://github.com/Nyr/openvpn-install) on the device. Choose protocol/port TCP/443.
-2. Copy `/etc/openvpn/server.conf` to `/etc/openvpn/server-udp.conf`.
+2. Turn it off temporary with `sudo systemctl stop openvpn@server.service`.
+2. Copy `/etc/openvpn/server.conf` to `/etc/openvpn/server-udp.conf`, .
 3. Modify `/etc/openvpn/server-udp.conf` so that the 2nd server listens to UDP/1194.
 4. Modify `server 10.8.0.0 255.255.255.0` to `server 10.8.0.0 255.255.255.128` in `/etc/openvpn/server.conf` so that TCP server gives out address starting `10.8.0.128`.
-5. Modify the line start with `remote` in `client.ovpn` to two lines, one `remote <hostname> 1194` and the other `remote <hostname> 443 tcp-client`. We will put the TCP server as the second preference because UDP is faster.
+5. Modify the `status` line on both files to be `status /var/log/openvpn-status-tcp.log` and `status /var/log/openvpn-status-udp.log` so it doesn't try to write into the read-only filesystem.
+6. Like wise, modify the `ifconfig-pool-persist` line to be `ifconfig-pool-persist /var/tmp/openvpn-ipp-tcp.txt` and `ifconfig-pool-persist /var/tmp/openvpn-ipp-udp.txt`.
+7. Modify the line start with `remote` in `client.ovpn` to two lines, one `remote <hostname> 1194` and the other `remote <hostname> 443 tcp-client`. We will put the TCP server as the second preference because UDP is faster.
 
 The `<hostname>` should be the hostname where the device can be reached externally. See step 4 for more detail.
 
@@ -73,6 +76,21 @@ This part is completely optional. I have a heartbeat script living on the gist t
 ### Step 6: the client
 
 On macOS I recommend [TunnelBlick](https://tunnelblick.net). On iOS there is [OpenVPN Connect](https://apps.apple.com/us/app/openvpn-connect/id590379981). Don't download software from unofficial source!
+
+### Step 7: verify
+
+Reboot the device. Once it come back, you should have
+
+1. Two OpenVPN daemon up and running. You can verify that with `sudo systemctl openvpn@server.service` and `sudo systemctl openvpn@server-udp.service`.
+2. Verify that the system is read-only. You can verify that by running `remount` and see if it says `ro` instead of `rw`.
+
+Run `/etc/cron.hourly/vpn` on your own to trigger Dynamic DNS and UPnP update: `sudo /etc/cron.hourly/vpn`, after that you can verify that the external incomming connection works. The script saves its output at `/var/log/vpn.log`.
+
+Do `echo /etc/cron.hourly/vpn | sudo tee -a /etc/rc.local` to have script run once upon boot, not just hourly. Noted that WiFi may not connect at that time.
+
+To test the OpenVPN server on the TCP port, stop the UDP server and try to connect the client with it. The UDP server should timeout and the client should fallback to TCP.
+
+**Remember to change the SSH password!**
 
 ## Usage
 
@@ -124,9 +142,6 @@ The resulting image cannot be flashed into an SD card.
 * [Makefile cheatsheet](https://devhints.io/makefile)
 * [Turn on SSH](https://www.raspberrypi.org/documentation/remote-access/ssh/)
 * [Moniter a string in shell until it is found](https://superuser.com/a/900134)
-
-## To be incorporated
-
 * [Protect your Raspberry PI SD card, use Read-Only filesystem](https://hallard.me/raspberry-pi-read-only/): very useful but the assumptions on directories are outdated.
 * [ReadonlyRoot](https://wiki.debian.org/ReadonlyRoot): Also generic but useful.
 * [OpenVPN road warrior installer for Debian, Ubuntu and CentOS](https://github.com/Nyr/openvpn-install).
