@@ -44,7 +44,7 @@ To do that:
 3. Modify `/etc/openvpn/server-udp.conf` so that the 2nd server listens to UDP/1194.
 4. Modify `server 10.8.0.0 255.255.255.0` to `server 10.8.0.0 255.255.255.128` in `/etc/openvpn/server.conf` so that TCP server gives out address starting `10.8.0.128`.
 5. Modify the `status` line on both files to be `status /var/log/openvpn-status-tcp.log` and `status /var/log/openvpn-status-udp.log` so it doesn't try to write into the read-only filesystem.
-6. Like wise, modify the `ifconfig-pool-persist` line to be `ifconfig-pool-persist /var/tmp/openvpn-ipp-tcp.txt` and `ifconfig-pool-persist /var/tmp/openvpn-ipp-udp.txt`.
+6. Likewise, modify the `ifconfig-pool-persist` line to be `ifconfig-pool-persist /var/tmp/openvpn-ipp-tcp.txt` and `ifconfig-pool-persist /var/tmp/openvpn-ipp-udp.txt`.
 7. Modify the line start with `remote` in `client.ovpn` to two lines, one `remote <hostname> 1194` and the other `remote <hostname> 443 tcp-client`. We will put the TCP server as the second preference because UDP is faster.
 
 The `<hostname>` should be the hostname where the device can be reached externally. See step 4 for more detail.
@@ -69,15 +69,15 @@ The NAT port forwarding and LAN IP setup is substitute￼d with UPnP (Universal 
 
 Again, modify the script and comment out the part that you don't need before execute `openvpn.sh`.
 
-### Step 5: gist
+### Step 5: GitHub Gist
 
 This part is completely optional. I have a heartbeat script living on the gist that I wish the device to run every hour. This is the way to achieve it.
 
-### Step 6: the client
+### Step 6: The client
 
 On macOS I recommend [TunnelBlick](https://tunnelblick.net). On iOS there is [OpenVPN Connect](https://apps.apple.com/us/app/openvpn-connect/id590379981). Don't download software from unofficial source!
 
-### Step 7: verify
+### Step 7: Verify
 
 Reboot the device. Once it come back, you should have
 
