@@ -4,15 +4,15 @@ My own assorted script (manual or automated) to prepare for Raspberry Pi images 
 
 Likely not going to support future versions once I am done with my current project, but should be helpful for people who is looking.
 
-## Step-by-step guide
+## Step-by-step guide to build your own VPN service
 
 Here are the things you need to get your device up and running.
 
 ### Step 1: Get a Raspberry Pi and SSH connection
 
-You don’t need fancy new model just for OpenVPN. A smaller one would work. Install [Raspbian](https://www.raspberrypi.org/downloads/raspbian/) on the SD card. You will need some way to get it to connect to network and SSH turned on.
+You don’t need a fancy new model just for OpenVPN. A smaller one would work. Install [Raspbian](https://www.raspberrypi.org/downloads/raspbian/) on the SD card. You will need some way to get it to connect to network and SSH turned on.
 
-* Check the [SSH documentation](https://www.raspberrypi.org/documentation/remote-access/ssh/) to figure out how to enable SSH including on headless configuration 
+* Check the [SSH documentation](https://www.raspberrypi.org/documentation/remote-access/ssh/) to figure out how to enable SSH including on headless configuration
 * Also, [Setting up a Raspberry Pi headless](https://www.raspberrypi.org/documentation/configuration/wireless/headless.md) contain more information including setting up WiFi before the first boot.
 
 ### Step 2: Bootstrap
@@ -23,7 +23,7 @@ This part is hopefully written as a shell script, if it works. It does the follo
 * Turn off swap, stopping more disk writes.
 * Install `unattended-upgrades`, so the OS is kept up-to-date with security fixes on its own.
 * Set the file system to be readonly and move all the mutable states to `tmpfs`. This is done so that an unexpected power cycle won’t corrupt the file system and prevent the device from booting up. **This is very important in order for devices that is hard to service.**
-* Also installed a `remount` command-line tool for easy toggle between read-write and read-only. 
+* Also installed a `remount` command-line tool for easy toggle between read-write and read-only.
 
 To execute `bootstrap.sh` on it, run this on your terminal:
 
@@ -49,7 +49,7 @@ To do that:
 
 The `<hostname>` should be the hostname where the device can be reached externally. See step 4 for more detail.
 
-`openvpn-install` is very good at setting up one-off things in the system like `iptable` rules and kernel forwarding option. I don't know if the rule will stick after reboot, but if not, `openvpn.sh` has the same things.
+`openvpn-install` is very good at setting up one-off things in the system like `iptable` rules and kernel forwarding option. I don't know if the rule will stick after reboot, but if is not, `openvpn.sh` has the same things.
 
 Regardless, you will need `openvpn.sh` to setup the Dynamic DNS and the `systemd` script for the UDP server, and more (see below.)
 
@@ -61,7 +61,7 @@ To gain access to the machine inside an ordinary home network setup, you'll need
 2. Set the router IPv4 NAT to forward the incoming ports to a specific LAN IP
 3. Get the device to be on that specific LAN IP
 
-Note that even though the device may receive an IPv6 address, most home routers block all incoming IPv6 connections and there is not way to configure it otherwise. Until that changes, we will keep working with IPv4. 
+Note that even though the device may receive an IPv6 address, most home routers block all incoming IPv6 connections and there is not way to configure it otherwise. Until that changes, we will keep working with IPv4.
 
 To setup a Dynamic DNS, you will need a Dynamic DNS service. It may be the DNS come with your domain registrar, for example [Namecheap](https://www.namecheap.com). It may be a free service where you `CNAME` your subdomain hostname to the dynamic record. You could use the hostname provided by the dyanmic DNS service directly. Regardless, you will need to figure out the URL that `curl` should hit and edit `openvpn.sh` to fill that in. The script will set it up in the crontab to run every hour.
 
@@ -71,18 +71,18 @@ Again, modify the script and comment out the part that you don't need before exe
 
 ### Step 5: GitHub Gist
 
-This part is completely optional. I have a heartbeat script living on the gist that I wish the device to run every hour. This is the way to achieve it.
+This part is completely optional. I have a heartbeat script living on the gist that I wish the device to run every hour. This is the way to achieve it; it's documented in `gist.sh`.
 
 ### Step 6: The client
 
-On macOS I recommend [TunnelBlick](https://tunnelblick.net). On iOS there is [OpenVPN Connect](https://apps.apple.com/us/app/openvpn-connect/id590379981). Don't download software from unofficial source!
+On macOS I recommend [TunnelBlick](https://tunnelblick.net). On iOS there is [OpenVPN Connect](https://apps.apple.com/us/app/openvpn-connect/id590379981). Don't download software from unofficial source and always keep it up-to-date!
 
 ### Step 7: Verify
 
 Reboot the device. Once it come back, you should have
 
-1. Two OpenVPN daemon up and running. You can verify that with `sudo systemctl openvpn@server.service` and `sudo systemctl openvpn@server-udp.service`.
-2. Verify that the system is read-only. You can verify that by running `remount` and see if it says `ro` instead of `rw`.
+1. Two OpenVPN daemon up and running. You can verify that with `sudo systemctl status openvpn@server.service` and `sudo systemctl status openvpn@server-udp.service`.
+2. The system filesystem should be read-only. You can verify that by running `remount` and see if it says `Current mount options: ro` instead of `rw`.
 
 Run `/etc/cron.hourly/vpn` on your own to trigger Dynamic DNS and UPnP update: `sudo /etc/cron.hourly/vpn`, after that you can verify that the external incomming connection works. The script saves its output at `/var/log/vpn.log`.
 
