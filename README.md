@@ -21,7 +21,7 @@ This part is hopefully written as a shell script, if it works. It does the follo
 
 * Install common tools
 * Turn off swap, stopping more disk writes.
-* Install `unattended-upgrades`, so the OS is kept up-to-date with security fixes on its own.
+* ~~Install `unattended-upgrades`, so the OS is kept up-to-date with security fixes on its own.~~ [Raspberry Pi does not offer a separate security label, there is no way to setup `unattended-upgrades` without accepting all package updates](https://www.raspberrypi.org/forums/viewtopic.php?p=1191453&sid=bb8f274806ee652e5fa8efa41f479da8#p1191453)
 * Set the file system to be readonly and move all the mutable states to `tmpfs`. This is done so that an unexpected power cycle won’t corrupt the file system and prevent the device from booting up. **This is very important in order for devices that is hard to service.**
 * Also installed a `remount` command-line tool for easy toggle between read-write and read-only.
 
