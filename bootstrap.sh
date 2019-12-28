@@ -86,20 +86,32 @@ fi
 TAG=\${2:-user}
 
 if awk '\$2 == \"/\" {print \$4}' /etc/mtab | grep \"\$1\" -q; then
+    # Currently in the desired state.
+    echo \$(date): \"\$1\" \"\$TAG\" \"<skipped (1)>\" >> /var/log/remount.log
     exit
 fi
 
-if [ \"\$1\" = \"rw\" ]; then
-    touch \"/var/run/remount-\$TAG\"
-elif [ ! -f \"/var/run/remount-\$TAG\" ]; then
+if [ \"\$1\" = \"ro\" -a ! -f \"/var/run/remount-\$TAG\" ]; then
+    # Was never set to read-write under this tag.
+    # Skip to prevent re-entry.
+    echo \$(date): \"\$1\" \"\$TAG\" \"<skipped (2)>\" >> /var/log/remount.log
     exit
-else
-    rm -f \"/var/run/remount-\$TAG\"
+fi
+
+mount -o remount,\"\$1\" /
+ERRNO=\$?
+if [ \$ERRNO != 0 ]; then
+    echo \$(date): \"\$1\" \"\$TAG\" \"<failed. lsof: \$(lsof +f -- / | tail -n+2 | awk '{ print \$1 }' | uniq | xargs echo)>\" >> /var/log/remount.log
+    exit \$ERRNO
 fi
 
 echo \$(date): \"\$1\" \"\$TAG\" >> /var/log/remount.log
-mount -o remount,\"\$1\" /
-exit \$?
+
+if [ \"\$1\" = \"rw\" ]; then
+    touch \"/var/run/remount-\$TAG\"
+else
+    rm -f \"/var/run/remount-\$TAG\"
+fi
 " | sudo tee /sbin/remount > /dev/null && \
 sudo chmod +x /sbin/remount && \
 
