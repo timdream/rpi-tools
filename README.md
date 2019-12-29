@@ -21,7 +21,7 @@ This part is hopefully written as a shell script, if it works. It does the follo
 
 * Install common tools
 * Turn off swap, stopping more disk writes.
-* Install `unattended-upgrades`, so the OS is kept up-to-date with security fixes on its own.
+* Install `unattended-upgrades` and ask it to automatically install all package updates except for known packages that touches `/boot`.
 * Set the file system to be readonly and move all the mutable states to `tmpfs`. This is done so that an unexpected power cycle won’t corrupt the file system and prevent the device from booting up. **This is very important in order for devices that is hard to service.**
 * Also installed a `remount` command-line tool for easy toggle between read-write and read-only.
 
@@ -145,3 +145,4 @@ The resulting image cannot be flashed into an SD card.
 * [Protect your Raspberry PI SD card, use Read-Only filesystem](https://hallard.me/raspberry-pi-read-only/): very useful but the assumptions on directories are outdated.
 * [ReadonlyRoot](https://wiki.debian.org/ReadonlyRoot): Also generic but useful.
 * [OpenVPN road warrior installer for Debian, Ubuntu and CentOS](https://github.com/Nyr/openvpn-install).
+* [Configuring `unattended-upgrades` on Raspbian Stretch](https://raspberrypi.stackexchange.com/a/74973)
