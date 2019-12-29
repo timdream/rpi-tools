@@ -13,8 +13,8 @@ echo ">> turn off swap" && \
 sudo dphys-swapfile swapoff && sudo dphys-swapfile uninstall && sudo systemctl disable dphys-swapfile && \
 sudo sed -i '1!b;s/$/ noswap/' /boot/cmdline.txt && \
 
-#echo ">> Install unattended-upgrades" && \
-#sudo apt-get install -y unattended-upgrades && \
+echo ">> Install unattended-upgrades" && \
+sudo apt-get install -y unattended-upgrades && \
 
 # Make disk readonly
 
