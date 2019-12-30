@@ -77,10 +77,13 @@ sudo rmdir /var/tmp- && \
 echo "tmpfs  /var/tmp          tmpfs  nosuid,nodev  0  0" | sudo tee -a /etc/fstab > /dev/null && \
 
 echo ">> Install /sbin/remount" && \
+echo "#!/bin/bash
+
 # A remount script that only set the root filesystem back to readonly
 # if the tag matches. Avoid the filesystem being set to readonly
 # if it was set read-write manually.
-echo "#!/bin/bash
+
+# Author: 2019 Tim Guan-tin Chien <timdream@gmail.com>
 
 if [ -z \"\$1\" ]; then
     echo \"Usage: remount ro|rw [tag]\"
@@ -107,7 +110,7 @@ fi
 mount -o remount,\"\$1\" /
 ERRNO=\$?
 if [ \$ERRNO != 0 ]; then
-    echo \$(date): \"\$1\" \"\$TAG\" \"<failed. lsof: \$(lsof +f -- / | tail -n+2 | awk '{ print \$1 }' | uniq | xargs echo)>\" >> /var/log/remount.log
+    echo \$(date): \"\$1\" \"\$TAG\" \"<failed. lsof: \$(lsof +f -- / | tail -n+2 | awk '\$4 ~ /[wu]\$/ { print \$1 }' | uniq | xargs echo)>\" >> /var/log/remount.log
     exit \$ERRNO
 fi
 

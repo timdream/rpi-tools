@@ -92,6 +92,12 @@ To test the OpenVPN server on the TCP port, stop the UDP server and try to conne
 
 **Remember to change the SSH password!** Noted that `fail2ban` is not setup because it won't be able to tell the remote IP addresses behind an NAT.
 
+Typing `remount` will give you current mount option of the root filesystem, and usage.
+`bootstrap.sh` would patch a few scripts for them to remount the disk read-write temporary, but sometimes, `remount` may fail to set the disk to read-only again.
+When that happens, the offending processes *may* be identified in `/var/log/remount.log`.
+It would be wise to have some monitoring in place to verify the current disk state.
+I am doing that in my Gist which runs hourly.
+
 ## Usage
 
 This part of the doc is not that useful if you read the step-by-step guide.
