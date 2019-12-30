@@ -90,7 +90,7 @@ Do `echo /etc/cron.hourly/vpn | sudo tee -a /etc/rc.local` to have script run on
 
 To test the OpenVPN server on the TCP port, stop the UDP server and try to connect the client with it. The UDP server should timeout and the client should fallback to TCP.
 
-**Remember to change the SSH password!**
+**Remember to change the SSH password!** Noted that `fail2ban` is not setup because it won't be able to tell the remote IP addresses behind an NAT.
 
 ## Usage
 
