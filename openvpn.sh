@@ -25,17 +25,17 @@ echo ============================================== >> /var/log/vpn.log
 # Check interface
 __IFACE=\$(route -4 | grep default | awk '{print \$8}')
 printf \"Interface: %s\n\" \"\$__IFACE\" >> /var/log/vpn.log
-[ -z \"\$__IFACE\" ] && echo 1
+[ -z \"\$__IFACE\" ] && exit
 
 # Print the IP address
 __IP=\$(ifconfig \$__IFACE | grep \"inet \" | awk '{print \$2}')
 printf \"LAN IP: %s\n\" \"\$__IP\" >> /var/log/vpn.log
-[ -z \"\$__IP\" ] && echo 1
+[ -z \"\$__IP\" ] && exit
 
 # Print the external IP address
 __EXTERNAL_IP=\$(dig -4 @resolver1.opendns.com ANY myip.opendns.com +short)
 printf \"External IP: %s\n\" \"\$__EXTERNAL_IP\" >> /var/log/vpn.log
-[ -z \"\$__EXTERNAL_IP\" ] && echo 1
+[ -z \"\$__EXTERNAL_IP\" ] && exit
 
 # Dynamic DNS
 echo -n \"Dynamic DNS: \" >> /tmp/vpn.log
