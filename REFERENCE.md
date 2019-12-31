@@ -408,6 +408,11 @@ git commit 202d7d855181acbb15662bb08484f6229a113517
 * OpenVPN version: Default (2.4.7 - OpenSSL v1.0.2t)
 * VPN log level: OpenVPN level 3 - normal output
 
+* Monitor network settings: checked
+* Route all IPv4 traffic through the VPN: checked
+* Disable IPv6 unless the VPN server is accessed using IPv6: checked
+* Check if appearant public IP address changed after connecting: checked
+
 ## Example `/var/log/remount.log`
 
 ```
