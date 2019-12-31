@@ -86,8 +86,6 @@ Reboot the device. Once it come back, you should have
 
 Run `/etc/cron.hourly/vpn` on your own to trigger Dynamic DNS and UPnP update: `sudo /etc/cron.hourly/vpn`, after that you can verify that the external incomming connection works. The script saves its output at `/var/log/vpn.log`.
 
-Do `echo /etc/cron.hourly/vpn | sudo tee -a /etc/rc.local` to have script run once upon boot, not just hourly. Noted that WiFi may not connect at that time.
-
 To test the OpenVPN server on the TCP port, stop the UDP server and try to connect the client with it. The UDP server should timeout and the client should fallback to TCP.
 
 **Remember to change the SSH password!** Noted that `fail2ban` is not setup because it won't be able to tell the remote IP addresses behind an NAT.

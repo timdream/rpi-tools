@@ -63,4 +63,8 @@ fi
 
 echo | sudo tee -a /dev/tty1 >> /dev/null
 " | sudo tee /etc/cron.hourly/vpn > /dev/null && \
-sudo chmod +x /etc/cron.hourly/vpn
+sudo chmod +x /etc/cron.hourly/vpn && \
+
+# Insert call to /etc/cron.hourly/vpn to /etc/rc.local.
+# sleep 10 to wait for network become ready.
+sudo sed -i '/exit/i sleep 10\n/etc/cron.hourly/vpn' /etc/cron.hourly/fake-hwclock
