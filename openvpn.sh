@@ -23,7 +23,7 @@ date | sudo tee -a /dev/tty1 >> /var/log/vpn.log
 echo ============================================== | sudo tee -a /dev/tty1 >> /var/log/vpn.log
 
 # Check interface
-__IFACE=\$(route -4 | grep default | awk '{print \$8}')
+__IFACE=\$(route -4 | grep default | head -n 1 | awk '{print \$8}')
 printf \"Interface: %s\n\" \"\$__IFACE\" | sudo tee -a /dev/tty1 >> /var/log/vpn.log
 [ -z \"\$__IFACE\" ] && exit
 
@@ -44,6 +44,7 @@ echo | sudo tee -a /dev/tty1 >> /var/log/vpn.log
 
 # uPnP (SSH & OpenVPN UDP + TCP)
 if [[ -z \"\$(ssh-keyscan -p 8022 \$__EXTERNAL_IP 2>/dev/null)\" ]]; then
+  echo \"Setup uPnP\" | sudo tee -a /dev/tty1 >> /var/log/vpn.log
   upnpc -d 8022 TCP | sudo tee -a /dev/tty1 >> /var/log/vpn.log
   upnpc -d 28022 TCP | sudo tee -a /dev/tty1 >> /var/log/vpn.log
   upnpc -d 443 TCP | sudo tee -a /dev/tty1 >> /var/log/vpn.log
@@ -60,6 +61,6 @@ if [ -z \"\$(iptables -t nat -L | grep 10.8.0.0)\" ]; then
   iptables -t nat -A POSTROUTING -s 10.8.0.0/24 ! -d 10.8.0.0/24 -j SNAT --to \"\$__IP\" | sudo tee -a /dev/tty1 >> /var/log/vpn.log
 fi
 
-echo | sudo tee -a /dev/tty1
+echo | sudo tee -a /dev/tty1 >> /dev/null
 " | sudo tee /etc/cron.hourly/vpn > /dev/null && \
 sudo chmod +x /etc/cron.hourly/vpn
