@@ -150,3 +150,4 @@ The resulting image cannot be flashed into an SD card.
 * [ReadonlyRoot](https://wiki.debian.org/ReadonlyRoot): Also generic but useful.
 * [OpenVPN road warrior installer for Debian, Ubuntu and CentOS](https://github.com/Nyr/openvpn-install).
 * [Configuring `unattended-upgrades` on Raspbian Stretch](https://raspberrypi.stackexchange.com/a/74973)
+* [Test UDP connection](https://serverfault.com/a/733921)
