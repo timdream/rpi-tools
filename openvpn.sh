@@ -48,11 +48,11 @@ if [[ -z \"\$(ssh-keyscan -p 8022 \$__EXTERNAL_IP 2>/dev/null)\" ]]; then
   upnpc -d 8022 TCP | sudo tee -a /dev/tty1 >> /var/log/vpn.log
   upnpc -d 28022 TCP | sudo tee -a /dev/tty1 >> /var/log/vpn.log
   upnpc -d 443 TCP | sudo tee -a /dev/tty1 >> /var/log/vpn.log
-  upnpc -d 1194 UDP | sudo tee -a /dev/tty1 >> /var/log/vpn.log
+  upnpc -d 443 UDP | sudo tee -a /dev/tty1 >> /var/log/vpn.log
 
   upnpc -a \"\$__IP\" 22 8022 TCP | sudo tee -a /dev/tty1 >> /var/log/vpn.log
   upnpc -a \"\$__IP\" 22 28022 TCP | sudo tee -a /dev/tty1 >> /var/log/vpn.log
-  upnpc -r 1194 UDP 443 TCP | sudo tee -a /dev/tty1 >> /var/log/vpn.log
+  upnpc -r 443 UDP 443 TCP | sudo tee -a /dev/tty1 >> /var/log/vpn.log
 fi
 
 # OpenVPN

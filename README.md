@@ -35,17 +35,18 @@ where `raspberrypi.local` should be the mDNS hostname of your device in the same
 
 ### Step 3: Setup OpenVPN server
 
-We will setup two daemons so the service will be available over TCP and UDP.
+We will setup two daemons so the service will be available over TCP/443 and UDP/443.
+We will use the HTTPS/QUIC port to establish our TLS connection to avoid blockage.
 To do that:
 
 1. Run [openvpn-install](https://github.com/Nyr/openvpn-install) on the device. Choose protocol/port TCP/443.
 2. Turn it off temporary with `sudo systemctl stop openvpn@server.service`.
 2. Copy `/etc/openvpn/server.conf` to `/etc/openvpn/server-udp.conf`, .
-3. Modify `/etc/openvpn/server-udp.conf` so that the 2nd server listens to UDP/1194.
+3. Modify `/etc/openvpn/server-udp.conf` so that the 2nd server listens to UDP/443.
 4. Modify `server 10.8.0.0 255.255.255.0` to `server 10.8.0.0 255.255.255.128` in `/etc/openvpn/server.conf` so that TCP server gives out address starting `10.8.0.128`.
 5. Modify the `status` line on both files to be `status /var/log/openvpn-status-tcp.log` and `status /var/log/openvpn-status-udp.log` so it doesn't try to write into the read-only filesystem.
 6. Likewise, modify the `ifconfig-pool-persist` line to be `ifconfig-pool-persist /var/tmp/openvpn-ipp-tcp.txt` and `ifconfig-pool-persist /var/tmp/openvpn-ipp-udp.txt`.
-7. Modify the line start with `remote` in `client.ovpn` to two lines, one `remote <hostname> 1194` and the other `remote <hostname> 443 tcp-client`. We will put the TCP server as the second preference because UDP is faster.
+7. Modify the line start with `remote` in `client.ovpn` to two lines, one `remote <hostname> 443` and the other `remote <hostname> 443 tcp-client`. We will put the TCP server as the second preference because UDP is faster.
 
 The `<hostname>` should be the hostname where the device can be reached externally. See step 4 for more detail.
 

@@ -40,7 +40,7 @@ crl-verify crl.pem
 ### `/etc/openvpn/server-udp.conf`
 
 ```
-port 1194
+port 443
 proto udp
 dev tun
 sndbuf 0
@@ -76,7 +76,7 @@ client
 dev tun
 sndbuf 0
 rcvbuf 0
-remote example.com 1194
+remote example.com 443
 remote example.com 443 tcp-client
 resolv-retry infinite
 nobind
@@ -275,8 +275,8 @@ UPnP device found. Is it an IGD ? : http://192.168.100.1:5000/
 Trying to continue anyway
 Local LAN ip address : 192.168.0.18
 ExternalIPAddress = 123.123.123.123
-InternalIP:Port = 192.168.0.18:1194
-external 123.123.123.123:1194 UDP is redirected to internal 192.168.0.18:1194 (duration=0)
+InternalIP:Port = 192.168.0.18:443
+external 123.123.123.123:443 UDP is redirected to internal 192.168.0.18:443 (duration=0)
 ExternalIPAddress = 123.123.123.123
 InternalIP:Port = 192.168.0.18:443
 external 123.123.123.123:443 TCP is redirected to internal 192.168.0.18:443 (duration=0)
@@ -359,7 +359,7 @@ ExternalIPAddress = 123.123.123.123
  1 UDP  4500->192.168.0.15:4500  'NAT-PMP 4500 udp' '' 4384
  2 TCP  8022->192.168.0.18:22    'libminiupnpc' '' 0
  3 TCP 28022->192.168.0.18:22    'libminiupnpc' '' 0
- 4 UDP  1194->192.168.0.18:1194  'libminiupnpc' '' 0
+ 4 UDP  443->192.168.0.18:443  'libminiupnpc' '' 0
  5 TCP   443->192.168.0.18:443   'libminiupnpc' '' 0
 GetGenericPortMappingEntry() returned 713 (SpecifiedArrayIndexInvalid)
 ```
