@@ -66,5 +66,6 @@ echo | sudo tee -a /dev/tty1 >> /dev/null
 sudo chmod +x /etc/cron.hourly/vpn && \
 
 # Insert call to /etc/cron.hourly/vpn to /etc/rc.local.
+# Also, remount to read-write a bit and call resolvconf -u so we can write /etc/resolv.conf.
 # sleep 10 to wait for network become ready.
-sudo sed -i '/exit/i sleep 10\n/etc/cron.hourly/vpn' /etc/cron.hourly/fake-hwclock
+sudo sed -i '/exit/i # VPN and resolv.conf\nsleep 10\n\nremount rw resolvconf\nresolvconf -u\nremount ro resolvconf\n\n/etc/cron.hourly/vpn\n' /etc/rc.local

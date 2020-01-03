@@ -169,7 +169,7 @@ target     prot opt source               destination
 
 Chain POSTROUTING (policy ACCEPT)
 target     prot opt source               destination
-SNAT       all  --  10.8.0.0/24         !10.8.0.0/24          to:192.168.1.10
+SNAT       all  --  10.8.0.0/24         !10.8.0.0/24          to:192.168.0.18
 ```
 
 ### `sudo cat /proc/sys/net/ipv4/ip_forward`
@@ -190,7 +190,7 @@ The uPnP part is verbose and probably indicating that my router here is a bit br
 Mon 30 Dec 18:17:07 GMT 2019
 ==============================================
 Interface: eth0
-LAN IP: 192.168.1.10
+LAN IP: 192.168.0.18
 External IP: 123.123.123.123
 Dynamic DNS: <?xml version="1.0"?><interface-response><Command>SETDNSHOST</Command><Language>eng</Language><IP>123.123.123.123</IP><ErrCount>0</ErrCount><ResponseCount>0</ResponseCount><Done>true</Done><debug><![CDATA[]]></debug></interface-response>
 Setup uPnP
@@ -198,88 +198,88 @@ upnpc : miniupnpc library test client. (c) 2005-2014 Thomas Bernard
 Go to http://miniupnp.free.fr/ or http://miniupnp.tuxfamily.org/
 for more information.
 List of UPNP devices found on the network :
- desc: http://192.168.1.1:5000/Public_UPNP_gatedesc.xml
+ desc: http://192.168.100.1:5000/rootDesc.x
  st: urn:schemas-upnp-org:device:InternetGatewayDevice:1
 
-Found a (not connected?) IGD : http://192.168.1.1:5000/Public_UPNP_C3
+UPnP device found. Is it an IGD ? : http://192.168.100.1:5000/
 Trying to continue anyway
-Local LAN ip address : 192.168.1.10
-UPNP_DeletePortMapping() returned : -3
+Local LAN ip address : 192.168.0.18
+UPNP_DeletePortMapping() returned : 0
 upnpc : miniupnpc library test client. (c) 2005-2014 Thomas Bernard
 Go to http://miniupnp.free.fr/ or http://miniupnp.tuxfamily.org/
 for more information.
 List of UPNP devices found on the network :
- desc: http://192.168.1.1:5000/Public_UPNP_gatedesc.xml
+ desc: http://192.168.100.1:5000/rootDesc.x
  st: urn:schemas-upnp-org:device:InternetGatewayDevice:1
 
-Found a (not connected?) IGD : http://192.168.1.1:5000/Public_UPNP_C3
+UPnP device found. Is it an IGD ? : http://192.168.100.1:5000/
 Trying to continue anyway
-Local LAN ip address : 192.168.1.10
-UPNP_DeletePortMapping() returned : -3
+Local LAN ip address : 192.168.0.18
+UPNP_DeletePortMapping() returned : 0
 upnpc : miniupnpc library test client. (c) 2005-2014 Thomas Bernard
 Go to http://miniupnp.free.fr/ or http://miniupnp.tuxfamily.org/
 for more information.
 List of UPNP devices found on the network :
- desc: http://192.168.1.1:5000/Public_UPNP_gatedesc.xml
+ desc: http://192.168.100.1:5000/rootDesc.x
  st: urn:schemas-upnp-org:device:InternetGatewayDevice:1
 
-Found a (not connected?) IGD : http://192.168.1.1:5000/Public_UPNP_C3
+UPnP device found. Is it an IGD ? : http://192.168.100.1:5000/
 Trying to continue anyway
-Local LAN ip address : 192.168.1.10
-UPNP_DeletePortMapping() returned : -3
+Local LAN ip address : 192.168.0.18
+UPNP_DeletePortMapping() returned : 0
 upnpc : miniupnpc library test client. (c) 2005-2014 Thomas Bernard
 Go to http://miniupnp.free.fr/ or http://miniupnp.tuxfamily.org/
 for more information.
 List of UPNP devices found on the network :
- desc: http://192.168.1.1:5000/Public_UPNP_gatedesc.xml
+ desc: http://192.168.100.1:5000/rootDesc.x
  st: urn:schemas-upnp-org:device:InternetGatewayDevice:1
 
-Found a (not connected?) IGD : http://192.168.1.1:5000/Public_UPNP_C3
+UPnP device found. Is it an IGD ? : http://192.168.100.1:5000/
 Trying to continue anyway
-Local LAN ip address : 192.168.1.10
-UPNP_DeletePortMapping() returned : -3
+Local LAN ip address : 192.168.0.18
+UPNP_DeletePortMapping() returned : 0
 upnpc : miniupnpc library test client. (c) 2005-2014 Thomas Bernard
 Go to http://miniupnp.free.fr/ or http://miniupnp.tuxfamily.org/
 for more information.
 List of UPNP devices found on the network :
- desc: http://192.168.1.1:5000/Public_UPNP_gatedesc.xml
+ desc: http://192.168.100.1:5000/rootDesc.x
  st: urn:schemas-upnp-org:device:InternetGatewayDevice:1
 
-Found a (not connected?) IGD : http://192.168.1.1:5000/Public_UPNP_C3
+UPnP device found. Is it an IGD ? : http://192.168.100.1:5000/
 Trying to continue anyway
-Local LAN ip address : 192.168.1.10
-GetExternalIPAddress failed.
-AddPortMapping(8022, 22, 192.168.1.10) failed with code -3 (UnknownError)
-GetSpecificPortMappingEntry() failed with code -3 (UnknownError)
+Local LAN ip address : 192.168.0.18
+ExternalIPAddress = 123.123.123.123
+InternalIP:Port = 192.168.0.18:22
+external 123.123.123.123:8022 TCP is redirected to internal 192.168.0.18:22 (duration=0)
 upnpc : miniupnpc library test client. (c) 2005-2014 Thomas Bernard
 Go to http://miniupnp.free.fr/ or http://miniupnp.tuxfamily.org/
 for more information.
 List of UPNP devices found on the network :
- desc: http://192.168.1.1:5000/Public_UPNP_gatedesc.xml
+ desc: http://192.168.100.1:5000/rootDesc.x
  st: urn:schemas-upnp-org:device:InternetGatewayDevice:1
 
-Found a (not connected?) IGD : http://192.168.1.1:5000/Public_UPNP_C3
+UPnP device found. Is it an IGD ? : http://192.168.100.1:5000/
 Trying to continue anyway
-Local LAN ip address : 192.168.1.10
-GetExternalIPAddress failed.
-AddPortMapping(28022, 22, 192.168.1.10) failed with code -3 (UnknownError)
-GetSpecificPortMappingEntry() failed with code -3 (UnknownError)
+Local LAN ip address : 192.168.0.18
+ExternalIPAddress = 123.123.123.123
+InternalIP:Port = 192.168.0.18:22
+external 123.123.123.123:28022 TCP is redirected to internal 192.168.0.18:22 (duration=0)
 upnpc : miniupnpc library test client. (c) 2005-2014 Thomas Bernard
 Go to http://miniupnp.free.fr/ or http://miniupnp.tuxfamily.org/
 for more information.
 List of UPNP devices found on the network :
- desc: http://192.168.1.1:5000/Public_UPNP_gatedesc.xml
+ desc: http://192.168.100.1:5000/rootDesc.x
  st: urn:schemas-upnp-org:device:InternetGatewayDevice:1
 
-Found a (not connected?) IGD : http://192.168.1.1:5000/Public_UPNP_C3
+UPnP device found. Is it an IGD ? : http://192.168.100.1:5000/
 Trying to continue anyway
-Local LAN ip address : 192.168.1.10
-GetExternalIPAddress failed.
-AddPortMapping(1194, 1194, 192.168.1.10) failed with code -3 (UnknownError)
-GetSpecificPortMappingEntry() failed with code -3 (UnknownError)
-GetExternalIPAddress failed.
-AddPortMapping(443, 443, 192.168.1.10) failed with code -3 (UnknownError)
-GetSpecificPortMappingEntry() failed with code -3 (UnknownError)
+Local LAN ip address : 192.168.0.18
+ExternalIPAddress = 123.123.123.123
+InternalIP:Port = 192.168.0.18:1194
+external 123.123.123.123:1194 UDP is redirected to internal 192.168.0.18:1194 (duration=0)
+ExternalIPAddress = 123.123.123.123
+InternalIP:Port = 192.168.0.18:443
+external 123.123.123.123:443 TCP is redirected to internal 192.168.0.18:443 (duration=0)
 Setup iptables
 ```
 
@@ -335,7 +335,7 @@ SSL-Session:
 
 ### `upnpc -l`
 
-This should list all redirections but my router fail to return that for some reasons.
+This should list all redirections.
 
 ```
 $ upnpc -l
@@ -343,19 +343,25 @@ upnpc : miniupnpc library test client. (c) 2005-2014 Thomas Bernard
 Go to http://miniupnp.free.fr/ or http://miniupnp.tuxfamily.org/
 for more information.
 List of UPNP devices found on the network :
- desc: http://192.168.1.1:5000/Public_UPNP_gatedesc.xml
+ desc: http://192.168.100.1:5000/rootDesc.x
  st: urn:schemas-upnp-org:device:InternetGatewayDevice:1
 
-Found a (not connected?) IGD : http://192.168.1.1:5000/Public_UPNP_C3
+UPnP device found. Is it an IGD ? : http://192.168.100.1:5000/
 Trying to continue anyway
-Local LAN ip address : 192.168.1.10
-GetConnectionTypeInfo failed.
-GetStatusInfo failed.
-  Time started : Mon Dec 30 19:11:27 2019
-GetLinkLayerMaxBitRates failed.
-GetExternalIPAddress failed. (errorcode=-3)
+Local LAN ip address : 192.168.0.18
+Connection Type : IP_Routed
+Status : Connected, uptime=1646419s, LastConnectionError : ERROR_NONE
+  Time started : Sun Dec 15 01:56:10 2019
+MaxBitRateDown : 4200000 bps (4.2 Mbps)   MaxBitRateUp 4200000 bps (4.2 Mbps)
+ExternalIPAddress = 123.123.123.123
  i protocol exPort->inAddr:inPort description remoteHost leaseTime
-GetGenericPortMappingEntry() returned -3 (UnknownError)
+ 0 UDP  5353->192.168.0.15:5353  'NAT-PMP 5353 udp' '' 4384
+ 1 UDP  4500->192.168.0.15:4500  'NAT-PMP 4500 udp' '' 4384
+ 2 TCP  8022->192.168.0.18:22    'libminiupnpc' '' 0
+ 3 TCP 28022->192.168.0.18:22    'libminiupnpc' '' 0
+ 4 UDP  1194->192.168.0.18:1194  'libminiupnpc' '' 0
+ 5 TCP   443->192.168.0.18:443   'libminiupnpc' '' 0
+GetGenericPortMappingEntry() returned 713 (SpecifiedArrayIndexInvalid)
 ```
 
 ### Version
@@ -417,6 +423,8 @@ git commit 202d7d855181acbb15662bb08484f6229a113517
 
 ```
 $ cat /var/log/remount.log
+Mon 30 Dec 04:17:08 GMT 2019: rw resolvconf
+Mon 30 Dec 04:17:08 GMT 2019: ro resolvconf
 Mon 30 Dec 04:17:08 GMT 2019: rw apt-daily-upgrade
 Mon 30 Dec 04:17:11 GMT 2019: ro apt-daily-upgrade
 Mon 30 Dec 18:45:16 GMT 2019: rw apt-daily
