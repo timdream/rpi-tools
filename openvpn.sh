@@ -38,9 +38,13 @@ printf \"External IP: %s\n\" \"\$__EXTERNAL_IP\" | sudo tee -a /dev/tty1 >> /var
 [ -z \"\$__EXTERNAL_IP\" ] && exit
 
 # Dynamic DNS
-echo -n \"Dynamic DNS: \" >> /tmp/vpn.log
-curl -s \"https://dynamicdns.park-your-domain.com/update?host=_________&domain=____________&password=___________________\" | sudo tee -a /dev/tty1 >> /var/log/vpn.log
-echo | sudo tee -a /dev/tty1 >> /var/log/vpn.log
+if [[ \"\$(dig -4 @208.67.222.222 A _________ +short)\" != \"\$__EXTERNAL_IP\" ]]; then
+  echo -n \"Dynamic DNS: \" | sudo tee -a /dev/tty1 >> /tmp/vpn.log
+  curl -s \"https://dynamicdns.park-your-domain.com/update?host=_________&domain=____________&password=___________________\" | sudo tee -a /dev/tty1 >> /var/log/vpn.log
+  echo | sudo tee -a /dev/tty1 >> /var/log/vpn.log
+else
+  echo \"Dynamic DNS skipped\" | sudo tee -a /dev/tty1 >> /tmp/vpn.log
+fi
 
 # uPnP (SSH & OpenVPN UDP + TCP)
 if [[ -z \"\$(ssh-keyscan -p 8022 \$__EXTERNAL_IP 2>/dev/null)\" ]]; then
@@ -53,12 +57,18 @@ if [[ -z \"\$(ssh-keyscan -p 8022 \$__EXTERNAL_IP 2>/dev/null)\" ]]; then
   upnpc -a \"\$__IP\" 22 8022 TCP | sudo tee -a /dev/tty1 >> /var/log/vpn.log
   upnpc -a \"\$__IP\" 22 28022 TCP | sudo tee -a /dev/tty1 >> /var/log/vpn.log
   upnpc -r 443 UDP 443 TCP | sudo tee -a /dev/tty1 >> /var/log/vpn.log
+else
+  echo \"Setup uPnP skipped\" | sudo tee -a /dev/tty1 >> /var/log/vpn.log
 fi
 
 # OpenVPN
-if [ -z \"\$(iptables -t nat -L | grep 10.8.0.0)\" ]; then
+if [ -z \"\$(iptables -t nat -L | grep 10.8.0.0 | grep \$__IP)\" ]; then
   echo \"Setup iptables\" | sudo tee -a /dev/tty1 >> /var/log/vpn.log
+  iptables -t nat -F | sudo tee -a /dev/tty1 >> /var/log/vpn.log
   iptables -t nat -A POSTROUTING -s 10.8.0.0/24 ! -d 10.8.0.0/24 -j SNAT --to \"\$__IP\" | sudo tee -a /dev/tty1 >> /var/log/vpn.log
+  iptables -t nat -L | sudo tee -a /dev/tty1 >> /var/log/vpn.log
+else
+  echo \"Setup iptables skipped\" | sudo tee -a /dev/tty1 >> /var/log/vpn.log
 fi
 
 echo | sudo tee -a /dev/tty1 >> /dev/null
