@@ -448,6 +448,20 @@ traceroute to 8.8.8.8 (8.8.8.8), 64 hops max, 52 byte packets
  ...
  ```
 
+### `nslookup`
+
+This verify that the client receives a DNS configuration that works.
+
+```
+$ nslookup www.google.com
+Server:		8.8.8.8
+Address:	8.8.8.8#53
+
+Non-authoritative answer:
+Name:	www.google.com
+Address: 216.58.200.36
+```
+
 ## Example `/var/log/remount.log`
 
 ```
