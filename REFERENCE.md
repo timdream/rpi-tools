@@ -419,6 +419,35 @@ git commit 202d7d855181acbb15662bb08484f6229a113517
 * Disable IPv6 unless the VPN server is accessed using IPv6: checked
 * Check if appearant public IP address changed after connecting: checked
 
+### `route`
+
+This verify that IPv4 connection goes to the tunnel.
+
+```
+$ route get 8.8.8.8
+   route to: dns.google
+destination: dns.google
+    gateway: 10.8.0.1
+  interface: utun4
+      flags: <UP,GATEWAY,HOST,DONE,WASCLONED,IFSCOPE,IFREF>
+ recvpipe  sendpipe  ssthresh  rtt,msec    rttvar  hopcount      mtu     expire
+       0         0         0         0         0         0      1500         0
+```
+
+### `traceroute`
+
+This verify that the client connection gets forwarded on the server.
+
+```
+$ traceroute 8.8.8.8
+traceroute to 8.8.8.8 (8.8.8.8), 64 hops max, 52 byte packets
+ 1  10.8.0.1 (10.8.0.1)  192.002 ms  408.636 ms  409.769 ms
+ 2  192.168.0.1 (192.168.0.1)  422.498 ms  201.484 ms  186.485 ms
+ 3  host-123-123-123-123.dynamic.kbtelecom.net (123.123.123.123)  430.026 ms  409.369 ms  408.965 ms
+ 4  192.168.11.169 (192.168.11.169)  409.532 ms  423.573 ms  395.242 ms
+ ...
+ ```
+
 ## Example `/var/log/remount.log`
 
 ```
