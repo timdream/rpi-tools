@@ -140,6 +140,17 @@ echo ">> Set /lib/systemd/system/apt-daily-upgrade.service to use /sbin/remount"
 sudo sed -i '/^ExecStart=\/usr/i ExecStartPre=/sbin/remount rw apt-daily-upgrade' /lib/systemd/system/apt-daily-upgrade.service && \
 sudo sed -i '/^ExecStart=\/usr/a ExecStartPost=/sbin/remount ro apt-daily-upgrade' /lib/systemd/system/apt-daily-upgrade.service && \
 
+echo ">> Set dhclient-script to use remount" && \
+echo "# This script must be sourced *before* /etc/dhcp/dhclient-enter-hooks.d/resolvconf
+# This is ensured by /sbin/dhclient-script since it lists files
+# with `run-parts --list /etc/dhcp/dhclient-enter-hooks.d`.
+
+remount rw dhclient-hook
+" | sudo tee /etc/dhcp/dhclient-enter-hooks.d/000-remount > /dev/null && \
+
+echo "remount ro dhclient-hook
+" | sudo tee /etc/dhcp/dhclient-exit-hooks.d/zzz-remount > /dev/null && \
+
 sudo systemctl daemon-reload && \
 
 echo ">> Add \"ro\" to /boot/cmdline.txt for kernel" && \
