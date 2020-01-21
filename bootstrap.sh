@@ -19,7 +19,7 @@ sudo apt-get install -y unattended-upgrades && \
 # Update the unattended-upgrades to what's offered upstream and add a blacklist with packages that touches /boot (always read-only).
 # Fixes https://bugs.launchpad.net/raspbian/+bug/1375919
 echo ">> Fix /etc/apt/apt.conf.d/50unattended-upgrades" && \
-curl https://raw.githubusercontent.com/mvo5/unattended-upgrades/master/data/50unattended-upgrades.Raspbian | sudo tee /etc/apt/apt.conf.d/50unattended-upgrades > /dev/null && \
+curl https://raw.githubusercontent.com/mvo5/unattended-upgrades/a41a4214/data/50unattended-upgrades.Raspbian | sudo tee /etc/apt/apt.conf.d/50unattended-upgrades > /dev/null && \
 sudo sed -i '/Unattended-Upgrade::Package-Blacklist {/a\ \ \ \ // Skip packages that touches /boot\n\ \ \ \ "raspberrypi-kernel";\n\ \ \ \ "raspberrypi-bootloader";\n' /etc/apt/apt.conf.d/50unattended-upgrades && \
 
 # Make disk readonly
