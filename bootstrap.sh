@@ -58,15 +58,14 @@ echo "tmpfs  /var/lib/sudo/ts  tmpfs  nosuid,nodev  0  0" | sudo tee -a /etc/fst
 
 echo ">> Redirect /var/log to tmpfs (restarts rsyslog)" && \
 sudo systemctl stop rsyslog.service && \
-sleep 10 && \
 sudo mv /var/log /var/log- && sudo mkdir /var/log && \
 sudo mount -t tmpfs -o nosuid,nodev tmpfs /var/log && \
 [ ! -z "$(sudo ls -1 /var/log-)" ] && sudo mv /var/log-/* /var/log/ || true && \
 [ ! -z "$(sudo ls -a1 /var/log- | grep -e "^\.[^\.]")" ] && sudo mv /var/log-/.[!.]* /var/log/ || true && \
 sudo rmdir /var/log- && \
 echo "tmpfs  /var/log          tmpfs  nosuid,nodev  0  0" | sudo tee -a /etc/fstab > /dev/null && \
-sleep 10 && \
 sudo systemctl start rsyslog.service && \
+sudo systemctl restart rsyslog.service && \
 
 echo ">> Redirect /var/tmp to tmpfs" && \
 sudo mv /var/tmp /var/tmp- && sudo mkdir /var/tmp && \
@@ -164,9 +163,9 @@ rm /tmp/fstab.tmp && \
 echo ">> Set kernel to reboot upon panic" && \
 echo kernel.panic = 10 | sudo tee /etc/sysctl.d/01-panic.conf > /dev/null && \
 
-#echo ">> Actually set the file system readonly" && \
-#sudo mount -o remount,ro /boot && \
-#FIXME: mount: / is busy even after rsyslog is disabled??
-#sudo mount -o remount,ro / && \
+echo ">> Actually set the file system readonly" && \
+sudo mount -o remount,ro /boot && \
+sudo lsof +f -- / | awk '$4 ~ /[wu]$/ { print $0 }' && \
+sudo mount -o remount,ro / && \
 
 echo ">> Done!"
