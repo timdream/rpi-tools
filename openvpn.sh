@@ -78,6 +78,9 @@ echo | sudo tee -a /dev/tty1 >> /dev/null
 " | sudo tee /etc/cron.hourly/vpn > /dev/null && \
 sudo chmod +x /etc/cron.hourly/vpn && \
 
+# Also make us run when dhcp renews
+sudo ln -s /etc/cron.hourly/vpn /etc/dhcp/dhclient-exit-hooks.d/zzz-vpn && \
+
 # Insert call to /etc/cron.hourly/vpn to /etc/rc.local.
 # sleep 10 to wait for network become ready.
 sudo sed -i '/exit/i # VPN and resolv.conf\nsleep 10\n/etc/cron.hourly/vpn\n' /etc/rc.local
