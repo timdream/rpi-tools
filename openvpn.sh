@@ -46,17 +46,20 @@ else
   echo \"Dynamic DNS skipped\" | sudo tee -a /dev/tty1 >> /tmp/vpn.log
 fi
 
-# uPnP (SSH & OpenVPN UDP + TCP)
+# uPnP
 if [[ -z \"\$(ssh-keyscan -p 8022 \$__EXTERNAL_IP 2>/dev/null)\" ]]; then
   echo \"Setup uPnP\" | sudo tee -a /dev/tty1 >> /var/log/vpn.log
-  upnpc -d 8022 TCP | sudo tee -a /dev/tty1 >> /var/log/vpn.log
-  upnpc -d 28022 TCP | sudo tee -a /dev/tty1 >> /var/log/vpn.log
-  upnpc -d 443 TCP | sudo tee -a /dev/tty1 >> /var/log/vpn.log
-  upnpc -d 443 UDP | sudo tee -a /dev/tty1 >> /var/log/vpn.log
+  # OpenVPN and SSH
+  upnpc -d 8022 TCP 28022 TCP 443 TCP 443 UDP | sudo tee -a /dev/tty1 >> /var/log/vpn.log
+  upnpc -e \"ssh\" -a \"\$__IP\" 22 8022 TCP | sudo tee -a /dev/tty1 >> /var/log/vpn.log
+  upnpc -e \"ssh\" -a \"\$__IP\" 22 28022 TCP | sudo tee -a /dev/tty1 >> /var/log/vpn.log
+  upnpc -e \"openvpn\" -r 443 UDP 443 TCP | sudo tee -a /dev/tty1 >> /var/log/vpn.log
 
-  upnpc -a \"\$__IP\" 22 8022 TCP | sudo tee -a /dev/tty1 >> /var/log/vpn.log
-  upnpc -a \"\$__IP\" 22 28022 TCP | sudo tee -a /dev/tty1 >> /var/log/vpn.log
-  upnpc -r 443 UDP 443 TCP | sudo tee -a /dev/tty1 >> /var/log/vpn.log
+  # mosh
+  if [[ \"\$(which mosh-server)\" ]]; then
+    upnpc -d 61000 UDP 61001 UDP
+    upnpc -e \"mosh\" -r 61000 UDP 61001 UDP
+  fi
 else
   echo \"Setup uPnP skipped\" | sudo tee -a /dev/tty1 >> /var/log/vpn.log
 fi
