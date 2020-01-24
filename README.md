@@ -33,26 +33,37 @@ ssh pi@raspberrypi.local -o UserKnownHostsFile=./known_hosts bash < ./bootstrap.
 
 where `raspberrypi.local` should be the mDNS hostname of your device in the same LAN. You are more than welcome to comment out the section that you don't need before running the script.
 
-### Step 3: Setup OpenVPN server
+### Step 3: OpenVPN servers
 
-We will setup two daemons so the service will be available over TCP/443 and UDP/443.
+We'll setup two services so the connection will be more reliable.
+
+### Step 3.1: Setup the UDP OpenVPN server
+
+We will setup the first OpenVPN server by running the [openvpn-install](https://github.com/Nyr/openvpn-install) script on the device.
+
+```
+wget https://raw.githubusercontent.com/Nyr/openvpn-install/92d90dac/openvpn-install.sh -O - | ssh pi@raspberrypi.local -o UserKnownHostsFile=./known_hosts -- "cat > /tmp/openssh-install.sh"
+ssh pi@raspberrypi.local -o UserKnownHostsFile=./known_hosts "sudo remount rw"
+ssh pi@raspberrypi.local -o UserKnownHostsFile=./known_hosts "sudo bash /tmp/openssh-install.sh"
+ssh pi@raspberrypi.local -o UserKnownHostsFile=./known_hosts "sudo remount ro"
+```
+
+When prompted, set the OpenVPN server to use UDP/443, and a proper external hostname (see section 4.2 on dynamic DNS), and name the client file as `client`.
 We will use the HTTPS/QUIC port to establish our TLS connection to avoid blockage.
-To do that:
 
-1. Run [openvpn-install](https://github.com/Nyr/openvpn-install) on the device. Choose protocol/port TCP/443.
-2. Turn it off temporary with `sudo systemctl stop openvpn@server.service`.
-2. Copy `/etc/openvpn/server.conf` to `/etc/openvpn/server-udp.conf`, .
-3. Modify `/etc/openvpn/server-udp.conf` so that the 2nd server listens to UDP/443.
-4. Modify `server 10.8.0.0 255.255.255.0` to `server 10.8.0.0 255.255.255.128` in `/etc/openvpn/server.conf` so that TCP server gives out address starting `10.8.0.128`.
-5. Modify the `status` line on both files to be `status /var/log/openvpn-status-tcp.log` and `status /var/log/openvpn-status-udp.log` so it doesn't try to write into the read-only filesystem.
-6. Likewise, modify the `ifconfig-pool-persist` line to be `ifconfig-pool-persist /var/tmp/openvpn-ipp-tcp.txt` and `ifconfig-pool-persist /var/tmp/openvpn-ipp-udp.txt`.
-7. Modify the line start with `remote` in `client.ovpn` to two lines, one `remote <hostname> 443` and the other `remote <hostname> 443 tcp-client`. We will put the TCP server as the second preference because UDP is faster.
+### Step 3.2: Setup the TCP OpenVPN server
 
-The `<hostname>` should be the hostname where the device can be reached externally. See step 4 for more detail.
+This script will do the following
 
-`openvpn-install` is very good at setting up one-off things in the system like `iptable` rules and kernel forwarding option. I don't know if the rule will stick after reboot, but if is not, `openvpn.sh` has the same things.
+* Stop the UDP OpenVPN server
+* Make the necessary adjustment on the configuration file.
+* Copy the config to add a TCP server and also make the necessary adjustment.
+* Modify the client file.
+* Remove the iptables systemd script and replace it with a crontab.
 
-Regardless, you will need `openvpn.sh` to setup the Dynamic DNS and the `systemd` script for the UDP server, and more (see below.)
+```
+ssh pi@raspberrypi.local -o UserKnownHostsFile=./known_hosts bash < ./openvpn.sh
+```
 
 ### Step 4: External incoming network access
 
@@ -64,17 +75,37 @@ To gain access to the machine inside an ordinary home network setup, you'll need
 
 Note that even though the device may receive an IPv6 address, most home routers block all incoming IPv6 connections and there is not way to configure it otherwise. Until that changes, we will keep working with IPv4.
 
-To setup a Dynamic DNS, you will need a Dynamic DNS service. It may be the DNS come with your domain registrar, for example [Namecheap](https://www.namecheap.com). It may be a free service where you `CNAME` your subdomain hostname to the dynamic record. You could use the hostname provided by the dyanmic DNS service directly. Regardless, you will need to figure out the URL that `curl` should hit and edit `openvpn.sh` to fill that in. The script will set it up in the crontab to run every hour.
+### Step 4.1: NAT port forwarding or UPnP
 
 The NAT port forwarding and LAN IP setup is substitute￼d with UPnP (Universal Plug and Play). Just ensure that UPnP is turned on on the router. The script will try to configure it every hour and forward the port listed in the script. You can skip this part if you are sure that you can achieve (2) and (3) by manually configure the router, and the router configuration will stick.
 
-Again, modify the script and comment out the part that you don't need before execute `openvpn.sh`.
+```
+ssh pi@raspberrypi.local -o UserKnownHostsFile=./known_hosts bash < ./upnp.sh
+```
+
+### Step 4.2: Dynamic DNS
+
+To setup a Dynamic DNS, you will need a Dynamic DNS service. It may be the DNS come with your domain registrar, for example [Namecheap](https://www.namecheap.com). It may be a free service where you `CNAME` your subdomain hostname to the dynamic record. You could use the hostname provided by the dyanmic DNS service directly. Regardless, you will need to figure out the URL that `curl` should hit and edit `ddns.sh` to fill that in. The script will set it up in the crontab to run every hour.
+
+```
+ssh pi@raspberrypi.local -o UserKnownHostsFile=./known_hosts bash < ./ddns.sh
+```
 
 ### Step 5: GitHub Gist
 
 This part is completely optional. I have a heartbeat script living on the gist that I wish the device to run every hour. This is the way to achieve it; it's documented in `gist.sh`.
 
+```
+ssh pi@raspberrypi.local -o UserKnownHostsFile=./known_hosts bash < ./gist.sh
+```
+
 ### Step 6: The client
+
+With everything done you should have a `/root/client.ovpn` that you can import into any OpenVPN client.
+
+```
+ssh pi@raspberrypi.local -o UserKnownHostsFile=./known_hosts sudo cat /root/client.ovpn > ./client.ovpn
+```
 
 On macOS I recommend [TunnelBlick](https://tunnelblick.net). On iOS there is [OpenVPN Connect](https://apps.apple.com/us/app/openvpn-connect/id590379981). Don't download software from unofficial source and always keep it up-to-date!
 
@@ -82,10 +113,12 @@ On macOS I recommend [TunnelBlick](https://tunnelblick.net). On iOS there is [Op
 
 Reboot the device. Once it come back, you should have
 
-1. Two OpenVPN daemon up and running. You can verify that with `sudo systemctl status openvpn@server.service` and `sudo systemctl status openvpn@server-udp.service`.
+1. Two OpenVPN daemon up and running. You can verify that with `sudo systemctl status openvpn@server.service` and `sudo systemctl status openvpn@server-tcp.service`.
 2. The system filesystem should be read-only. You can verify that by running `remount` and see if it says `Current mount options: ro` instead of `rw`.
 
-Run `/etc/cron.hourly/vpn` on your own to trigger Dynamic DNS and UPnP update: `sudo /etc/cron.hourly/vpn`, after that you can verify that the external incomming connection works. The script saves its output at `/var/log/vpn.log`.
+Run `/etc/cron.hourly/iptables` to trigger iptables check: `sudo /etc/cron.hourly/iptables`. There should be exactly one rule in the `nat` table. Inspect the output of `sudo iptables -t nat -L POSTROUTING`.
+
+Run `/etc/cron.hourly/upnp` and `/etc/cron.hourly/ddns` on your own to trigger UPnP update: `sudo /etc/cron.hourly/vpn && sudo /etc/cron.hourly/ddns`, after that you can verify that the external incomming connection works. The scripts save thier outputs at `/var/log/upnp.log` and `/var/log/ddns.log`.
 
 To test the OpenVPN server on the TCP port, stop the UDP server and try to connect the client with it. The UDP server should timeout and the client should fallback to TCP.
 

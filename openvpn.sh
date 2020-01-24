@@ -1,86 +1,84 @@
 #!/bin/bash
 
-# Settings needed to restore an OpenVPN installation.
-# You would put your own /etc/openvpn back first.
-#
-# To set up a new one, use https://github.com/Nyr/openvpn-install
-# or https://github.com/timdream/openvpn-install (which is outdated and too complex)
+[ -f "/sbin/remount" ] && sudo remount rw openvpn || true && \
 
 echo ">> Install common tools" && \
-sudo apt-get install -y miniupnpc openvpn iptables openssl ca-certificates && \
-echo 'net.ipv4.ip_forward=1' | sudo tee /etc/sysctl.d/30-openvpn-forward.conf  > /dev/null && \
-echo 1 | sudo tee /proc/sys/net/ipv4/ip_forward  > /dev/null && \
-sudo systemctl enable openvpn@server.service && \
-sudo systemctl enable openvpn@server-udp.service && \
-sudo systemctl start openvpn@server.service && \
-sudo systemctl start openvpn@server-udp.service && \
+sudo apt-get install -y dig && \
 
-echo ">> Install /etc/cron.hourly/vpn" && \
+echo ">> Stop OpenVPN UDP service" && \
+
+sudo systemctl stop openvpn@server.service && \
+
+echo ">> Modify OpenVPN server config" && \
+
+sudo sed -i 's/ifconfig-pool-persist ipp.txt/ifconfig-pool-persist \/var\/tmp\/openvpn-ipp-udp.txt/' /etc/openvpn/server/server.conf && \
+sudo sed -i 's/status openvpn-status.log/status \/var\/tmp\/openvpn-status-udp.log/' /etc/openvpn/server/server.conf && \
+sudo sed -i '/local/d' /etc/openvpn/server/server.conf && \
+sudo rm -f /etc/openvpn/server/ipp.txt /etc/openvpn/server/openvpn-status.log && \
+
+echo ">> Modify OpenVPN client config" && \
+
+sudo sed -i '/proto udp/d' /root/client.ovpn && \
+sudo sed -i '/proto udp/d' /etc/openvpn/server/client-common.txt && \
+sudo sed -i "s/^remote \(.*\)/&\n& tcp-client/" /root/client.ovpn && \
+sudo sed -i "s/^remote \(.*\)/&\n& tcp-client/" /etc/openvpn/server/client-common.txt && \
+
+echo ">> Copy OpenVPN UDP server config to TCP server" && \
+
+sudo cp -R /etc/openvpn/server /etc/openvpn/server-tcp && \
+sudo sed -i 's/udp/tcp/g' /etc/openvpn/server-tcp/server.conf && \
+sudo sed -i 's/server 10.8.0.0 255.255.255.0/server 10.8.0.128 255.255.255.0/' /etc/openvpn/server-tcp/server.conf && \
+
+# XXX duplicate because not sure which config OpenVPN will pickup
+sudo ln /etc/openvpn/server-tcp/server.conf /etc/openvpn/server-tcp/server-tcp.conf && \
+
+echo ">> Enable and start OpenVPN TCP service" && \
+
+sudo systemctl enable --now openvpn-server@server-tcp.service && \
+
+echo ">> Restart OpenVPN UDP service" && \
+
+sudo systemctl start openvpn-server@server.service && \
+
+# Not using script installed by openvpn-iptables because it is tie to the LAN IP at the time of installation
+echo ">> Remove OpenVPN iptables service" && \
+
+sudo systemctl disable --now openvpn-iptables.service && \
+sudo rm -f /etc/systemd/system/openvpn-iptables.service && \
+
+echo ">> Install iptables crontab" && \
+
 echo "#!/bin/bash
 
-echo ============================================== | sudo tee -a /dev/tty1 >> /var/log/vpn.log
-date | sudo tee -a /dev/tty1 >> /var/log/vpn.log
-echo ============================================== | sudo tee -a /dev/tty1 >> /var/log/vpn.log
+echo ============================================== | sudo tee -a /dev/tty1 >> /var/log/iptables-cron.log
+date | sudo tee -a /dev/tty1 >> /var/log/iptables-cron.log
+echo ============================================== | sudo tee -a /dev/tty1 >> /var/log/iptables-cron.log
 
 # Check interface
 __IFACE=\$(route -4 | grep default | head -n 1 | awk '{print \$8}')
-printf \"Interface: %s\n\" \"\$__IFACE\" | sudo tee -a /dev/tty1 >> /var/log/vpn.log
+printf \"Interface: %s\n\" \"\$__IFACE\" | sudo tee -a /dev/tty1 >> /var/log/iptables-cron.log
 [ -z \"\$__IFACE\" ] && exit
 
 # Print the IP address
 __IP=\$(ifconfig \$__IFACE | grep \"inet \" | awk '{print \$2}')
-printf \"LAN IP: %s\n\" \"\$__IP\" | sudo tee -a /dev/tty1 >> /var/log/vpn.log
+printf \"LAN IP: %s\n\" \"\$__IP\" | sudo tee -a /dev/tty1 >> /var/log/iptables-cron.log
 [ -z \"\$__IP\" ] && exit
-
-# Print the external IP address
-__EXTERNAL_IP=\$(dig -4 @208.67.222.222 ANY myip.opendns.com +short)
-printf \"External IP: %s\n\" \"\$__EXTERNAL_IP\" | sudo tee -a /dev/tty1 >> /var/log/vpn.log
-[ -z \"\$__EXTERNAL_IP\" ] && exit
-
-# Dynamic DNS
-if [[ \"\$(dig -4 @208.67.222.222 A _________ +short)\" != \"\$__EXTERNAL_IP\" ]]; then
-  echo -n \"Dynamic DNS: \" | sudo tee -a /dev/tty1 >> /tmp/vpn.log
-  curl -s \"https://dynamicdns.park-your-domain.com/update?host=_________&domain=____________&password=___________________\" | sudo tee -a /dev/tty1 >> /var/log/vpn.log
-  echo | sudo tee -a /dev/tty1 >> /var/log/vpn.log
-else
-  echo \"Dynamic DNS skipped\" | sudo tee -a /dev/tty1 >> /tmp/vpn.log
-fi
-
-# uPnP
-if [[ -z \"\$(ssh-keyscan -p 8022 \$__EXTERNAL_IP 2>/dev/null)\" ]]; then
-  echo \"Setup uPnP\" | sudo tee -a /dev/tty1 >> /var/log/vpn.log
-  # OpenVPN and SSH
-  upnpc -d 8022 TCP 28022 TCP 443 TCP 443 UDP | sudo tee -a /dev/tty1 >> /var/log/vpn.log
-  upnpc -e \"ssh\" -a \"\$__IP\" 22 8022 TCP | sudo tee -a /dev/tty1 >> /var/log/vpn.log
-  upnpc -e \"ssh\" -a \"\$__IP\" 22 28022 TCP | sudo tee -a /dev/tty1 >> /var/log/vpn.log
-  upnpc -e \"openvpn\" -r 443 UDP 443 TCP | sudo tee -a /dev/tty1 >> /var/log/vpn.log
-
-  # mosh
-  if [[ \"\$(which mosh-server)\" ]]; then
-    upnpc -d 61000 UDP 61001 UDP
-    upnpc -e \"mosh\" -r 61000 UDP 61001 UDP
-  fi
-else
-  echo \"Setup uPnP skipped\" | sudo tee -a /dev/tty1 >> /var/log/vpn.log
-fi
 
 # OpenVPN
 if [ -z \"\$(iptables -t nat -L | grep 10.8.0.0 | grep \$__IP)\" ]; then
-  echo \"Setup iptables\" | sudo tee -a /dev/tty1 >> /var/log/vpn.log
-  iptables -t nat -F | sudo tee -a /dev/tty1 >> /var/log/vpn.log
-  iptables -t nat -A POSTROUTING -s 10.8.0.0/24 ! -d 10.8.0.0/24 -j SNAT --to \"\$__IP\" | sudo tee -a /dev/tty1 >> /var/log/vpn.log
-  iptables -t nat -L | sudo tee -a /dev/tty1 >> /var/log/vpn.log
+  echo \"Setup iptables\" | sudo tee -a /dev/tty1 >> /var/log/iptables-cron.log
+  iptables -t nat -F | sudo tee -a /dev/tty1 >> /var/log/iptables-cron.log
+  iptables -t nat -A POSTROUTING -s 10.8.0.0/24 ! -d 10.8.0.0/24 -j SNAT --to \"\$__IP\" | sudo tee -a /dev/tty1 >> /var/log/iptables-cron.log
+  iptables -t nat -L | sudo tee -a /dev/tty1 >> /var/log/iptables-cron.log
 else
-  echo \"Setup iptables skipped\" | sudo tee -a /dev/tty1 >> /var/log/vpn.log
+  echo \"Setup iptables skipped\" | sudo tee -a /dev/tty1 >> /var/log/iptables-cron.log
 fi
 
 echo | sudo tee -a /dev/tty1 >> /dev/null
-" | sudo tee /etc/cron.hourly/vpn > /dev/null && \
-sudo chmod +x /etc/cron.hourly/vpn && \
+" | sudo tee /etc/cron.hourly/iptables > /dev/null && \
+sudo chmod +x /etc/cron.hourly/iptables && \
 
 # Also make us run when dhcp renews
-sudo ln -s /etc/cron.hourly/vpn /etc/dhcp/dhclient-exit-hooks.d/zzz-vpn && \
+sudo ln -s /etc/cron.hourly/iptables /etc/dhcp/dhclient-exit-hooks.d/zzz-iptables && \
 
-# Insert call to /etc/cron.hourly/vpn to /etc/rc.local.
-# sleep 10 to wait for network become ready.
-sudo sed -i '/exit/i # VPN and resolv.conf\nsleep 10\n/etc/cron.hourly/vpn\n' /etc/rc.local
+[ -f "/sbin/remount" ] && sudo remount ro openvpn || true

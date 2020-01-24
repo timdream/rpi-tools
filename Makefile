@@ -70,3 +70,39 @@ boot: dist/raspbian_lite.img ${PTB_FILE} ${RPI_KERNEL}
 		-append "root=/dev/sda2 panic=1 rootfstype=ext4 rw" \
 		-drive "file=dist/raspbian_lite.img,index=0,media=disk,format=raw" \
 		-net user,hostfwd=tcp::5022-:22 -net nic -pidfile ${TMP_DIR}/qemu.pid -serial mon:stdio
+
+build/id_ed25519:
+	ssh-keygen -t ed25519 -f ./build/id_ed25519 -q -N ""
+
+.PNONY: ssh-copy-id
+ssh-copy-id: build/id_ed25519
+	rm -f ./build/known_hosts && \
+	ssh-copy-id -i ./build/id_ed25519.pub pi@localhost -p 5022 -o UserKnownHostsFile=./build/known_hosts
+
+.PNONY: test-bootstrap
+test-bootstrap: build/id_ed25519
+	ssh pi@localhost -i ./build/id_ed25519.pub -p 5022 -o UserKnownHostsFile=./build/known_hosts bash < ./bootstrap.sh
+
+.PNOHY: test-openvpn-install
+test-openvpn: build/id_ed25519
+	ssh pi@localhost -i ./build/id_ed25519.pub -p 5022 -o UserKnownHostsFile=./build/known_hosts "sudo mkdir /dev/net && sudo mknod /dev/net/tun c 10 200" && \
+	ssh pi@localhost -i ./build/id_ed25519.pub -p 5022 -o UserKnownHostsFile=./build/known_hosts "sudo remount rw" && \
+	wget https://raw.githubusercontent.com/Nyr/openvpn-install/92d90dac/openvpn-install.sh -O - | ssh pi@localhost -i ./build/id_ed25519.pub -p 5022 -o UserKnownHostsFile=./build/known_hosts "cat > /tmp/openssh-install.sh" && \
+	ssh pi@localhost -i ./build/id_ed25519.pub -p 5022 -o UserKnownHostsFile=./build/known_hosts "sudo bash /tmp/openssh-install.sh" && \
+	ssh pi@localhost -i ./build/id_ed25519.pub -p 5022 -o UserKnownHostsFile=./build/known_hosts "sudo remount ro"
+
+.PNOHY: test-openvpn
+test-openvpn: build/id_ed25519
+	ssh pi@localhost -i ./build/id_ed25519.pub -p 5022 -o UserKnownHostsFile=./build/known_hosts bash < ./openvpn.sh
+
+.PNOHY: test-upnp
+test-upnp: build/id_ed25519
+	ssh pi@localhost -i ./build/id_ed25519.pub -p 5022 -o UserKnownHostsFile=./build/known_hosts bash < ./upnp.sh
+
+.PNOHY: test-ddns
+test-ddns: build/id_ed25519
+	ssh pi@localhost -i ./build/id_ed25519.pub -p 5022 -o UserKnownHostsFile=./build/known_hosts bash < ./ddns.sh
+
+.PNOHY: test-gist
+test-gist: build/id_ed25519
+	ssh pi@localhost -i ./build/id_ed25519.pub -p 5022 -o UserKnownHostsFile=./build/known_hosts bash < ./gist.sh
