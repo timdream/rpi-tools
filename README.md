@@ -107,6 +107,31 @@ ssh pi@raspberrypi.local -o UserKnownHostsFile=./known_hosts sudo cat /root/clie
 
 On macOS I recommend [TunnelBlick](https://tunnelblick.net). On iOS there is [OpenVPN Connect](https://apps.apple.com/us/app/openvpn-connect/id590379981). Don't download software from unofficial source and always keep it up-to-date!
 
+macOS Client options I am using:
+
+* Connect: Manually
+* Set DNS/WINS: Set nameserver
+* OpenVPN version: Default (2.4.7 - OpenSSL v1.0.2t)
+* VPN log level: OpenVPN level 3 - normal output
+
+* Monitor network settings: checked
+* Route all IPv4 traffic through the VPN: checked
+* Disable IPv6 unless the VPN server is accessed using IPv6: checked
+* Check if appearant public IP address changed after connecting: checked
+
+iOS Client options I am using:
+
+* Seamless Tunnel: checked
+* VPN Protocol: Adaptive
+* IPv6: IPv4-Only Tunnel
+* Connection Timeout: 30 sec
+* Allow Compression (insecure): Full
+* AES-CBC Cipher Algorithm: checked
+* Minimum TLS Version: Profile Default
+* DNS Fallback: not checked
+* Connect Via: Any network
+* Layer 2 Reachability: checked
+
 ### Step 7: Verify
 
 Reboot the device. Once it come back, you should have
