@@ -1,8 +1,6 @@
 # rpi-tools
 
-My own assorted script (manual or automated) to prepare for Raspberry Pi images & to command booted up Raspberry Pi.
-
-Likely not going to support future versions once I am done with my current project, but should be helpful for people who is looking.
+Step-by-step scripts to semi-automatically setup an OpenVPN server on Raspberry Pi.
 
 ## Step-by-step guide to build your own VPN service
 
@@ -130,48 +128,17 @@ When that happens, the offending processes *may* be identified in `/var/log/remo
 It would be wise to have some monitoring in place to verify the current disk state.
 I am doing that in my Gist which runs hourly.
 
-## Usage
+## Testing
 
-This part of the doc is not that useful if you read the step-by-step guide.
-
-### bootstrap.sh
-
-After getting your Raspberry Pi booted up and SSH turned on, do this
-to execute `bootstrap.sh` on it.
-
-```
-ssh pi@raspberrypi.local -o UserKnownHostsFile=./known_hosts bash < ./bootstrap.sh
-```
-
-### openvpn.sh
-
-Setup an OpenVPN environment. Expects two OpenVPN configs at `/etc/openvpn/server-udp.conf` and `/etc/openvpn/server.conf`. Please modify the script to add your own Dynamic DNS secret and change the assumptions before running.
-
-```
-ssh pi@raspberrypi.local -o UserKnownHostsFile=./known_hosts bash < ./openvpn.sh
-```
-
-### gist.sh
-
-Setup an hourly crontab to run a script from GitHub Gist.
-
-```
-ssh pi@raspberrypi.local -o UserKnownHostsFile=./known_hosts bash < ./gist.sh
-```
-
-### wifi.sh
-
-Not really useful if you already have connectivity to it. Just a note on how to modify the disk image to enable Wifi before first boot.
-
-### QEMU image
-
-This part of the tool allow you to quickly emulate a device without having access to an actual device.
+These script are developed with a QEMU image builder and test scripts controlled by a `Makefile`.
 The resulting image cannot be flashed into an SD card.
+OpenVPN service don't actually work on the emulation because of native configuration, but it is useful enough to verify the script.
 
 1. Install qemu and wget: `brew install qemu wget`.
 2. Run `make`
 3. The resulting disk image can be found in `dist`.
 4. Boot up the device with `make boot`.
+5. On a separate terminal, test out each of the script with the following commands: `make test-bootstrap`, `make test-openvpn-install`, `make test-openvpn`, `make test-upnp`, `make test-ddns`, and `make test-gist`.
 
 ## References
 

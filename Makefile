@@ -84,7 +84,7 @@ test-bootstrap: build/id_ed25519
 	ssh pi@localhost -i ./build/id_ed25519.pub -p 5022 -o UserKnownHostsFile=./build/known_hosts bash < ./bootstrap.sh
 
 .PNOHY: test-openvpn-install
-test-openvpn: build/id_ed25519
+test-openvpn-install: build/id_ed25519
 	ssh pi@localhost -i ./build/id_ed25519.pub -p 5022 -o UserKnownHostsFile=./build/known_hosts "sudo mkdir /dev/net && sudo mknod /dev/net/tun c 10 200" && \
 	ssh pi@localhost -i ./build/id_ed25519.pub -p 5022 -o UserKnownHostsFile=./build/known_hosts "sudo remount rw" && \
 	wget https://raw.githubusercontent.com/Nyr/openvpn-install/92d90dac/openvpn-install.sh -O - | ssh pi@localhost -i ./build/id_ed25519.pub -p 5022 -o UserKnownHostsFile=./build/known_hosts "cat > /tmp/openssh-install.sh" && \
