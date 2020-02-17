@@ -1,21 +1,21 @@
-IMAGE_NAME=2019-04-08-raspbian-stretch-lite
+IMAGE_NAME=2020-02-13-raspbian-buster-lite
 QEMU=$(shell which qemu-system-arm)
 TMP_DIR=build
-RPI_KERNEL=${TMP_DIR}/kernel-qemu-4.14.79-stretch
+RPI_KERNEL=${TMP_DIR}/kernel-qemu-4.19.50-buster
 RPI_FS=${TMP_DIR}/${IMAGE_NAME}.img
 PTB_FILE=${TMP_DIR}/versatile-pb.dtb
 IMAGE_FILE=${TMP_DIR}/${IMAGE_NAME}.zip
-IMAGE=http://downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2019-04-09/${IMAGE_NAME}.zip
+IMAGE=http://downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2020-02-14/${IMAGE_NAME}.zip
 
 .PHONY: all
 all: dist/raspbian_lite.img
 
-${RPI_KERNEL}:
+${RPI_KERNEL}: Makefile
 	mkdir -p ${TMP_DIR} && \
-	wget https://github.com/dhruvvyas90/qemu-rpi-kernel/blob/master/kernel-qemu-4.14.79-stretch?raw=true \
+	wget https://github.com/dhruvvyas90/qemu-rpi-kernel/blob/master/kernel-qemu-4.19.50-buster?raw=true \
 	  -O ${RPI_KERNEL}
 
-${PTB_FILE}:
+${PTB_FILE}: Makefile
 	mkdir -p ${TMP_DIR} && \
 	wget https://github.com/dhruvvyas90/qemu-rpi-kernel/raw/master/versatile-pb.dtb \
 	  -O ${PTB_FILE}
