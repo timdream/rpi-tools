@@ -81,28 +81,28 @@ ssh-copy-id: build/id_ed25519
 
 .PNONY: test-bootstrap
 test-bootstrap: build/id_ed25519
-	ssh pi@localhost -i ./build/id_ed25519.pub -p 5022 -o UserKnownHostsFile=./build/known_hosts bash < ./bootstrap.sh
+	ssh pi@localhost -i ./build/id_ed25519 -p 5022 -o UserKnownHostsFile=./build/known_hosts bash < ./bootstrap.sh
 
 .PNOHY: test-openvpn-install
 test-openvpn-install: build/id_ed25519
-	ssh pi@localhost -i ./build/id_ed25519.pub -p 5022 -o UserKnownHostsFile=./build/known_hosts "sudo mkdir /dev/net && sudo mknod /dev/net/tun c 10 200" && \
-	ssh pi@localhost -i ./build/id_ed25519.pub -p 5022 -o UserKnownHostsFile=./build/known_hosts "sudo remount rw" && \
-	wget https://raw.githubusercontent.com/Nyr/openvpn-install/92d90dac/openvpn-install.sh -O - | ssh pi@localhost -i ./build/id_ed25519.pub -p 5022 -o UserKnownHostsFile=./build/known_hosts "cat > /tmp/openssh-install.sh" && \
-	ssh pi@localhost -i ./build/id_ed25519.pub -p 5022 -o UserKnownHostsFile=./build/known_hosts "sudo bash /tmp/openssh-install.sh" && \
-	ssh pi@localhost -i ./build/id_ed25519.pub -p 5022 -o UserKnownHostsFile=./build/known_hosts "sudo remount ro"
+	ssh pi@localhost -i ./build/id_ed25519 -p 5022 -o UserKnownHostsFile=./build/known_hosts "sudo mkdir /dev/net && sudo mknod /dev/net/tun c 10 200" && \
+	ssh pi@localhost -i ./build/id_ed25519 -p 5022 -o UserKnownHostsFile=./build/known_hosts "sudo remount rw" && \
+	wget https://raw.githubusercontent.com/Nyr/openvpn-install/92d90dac/openvpn-install.sh -O - | ssh pi@localhost -i ./build/id_ed25519 -p 5022 -o UserKnownHostsFile=./build/known_hosts "cat > /tmp/openssh-install.sh" && \
+	ssh pi@localhost -i ./build/id_ed25519 -p 5022 -o UserKnownHostsFile=./build/known_hosts "sudo bash /tmp/openssh-install.sh" && \
+	ssh pi@localhost -i ./build/id_ed25519 -p 5022 -o UserKnownHostsFile=./build/known_hosts "sudo remount ro"
 
 .PNOHY: test-openvpn
 test-openvpn: build/id_ed25519
-	ssh pi@localhost -i ./build/id_ed25519.pub -p 5022 -o UserKnownHostsFile=./build/known_hosts bash < ./openvpn.sh
+	ssh pi@localhost -i ./build/id_ed25519 -p 5022 -o UserKnownHostsFile=./build/known_hosts bash < ./openvpn.sh
 
 .PNOHY: test-upnp
 test-upnp: build/id_ed25519
-	ssh pi@localhost -i ./build/id_ed25519.pub -p 5022 -o UserKnownHostsFile=./build/known_hosts bash < ./upnp.sh
+	ssh pi@localhost -i ./build/id_ed25519 -p 5022 -o UserKnownHostsFile=./build/known_hosts bash < ./upnp.sh
 
 .PNOHY: test-ddns
 test-ddns: build/id_ed25519
-	ssh pi@localhost -i ./build/id_ed25519.pub -p 5022 -o UserKnownHostsFile=./build/known_hosts bash < ./ddns.sh
+	ssh pi@localhost -i ./build/id_ed25519 -p 5022 -o UserKnownHostsFile=./build/known_hosts bash < ./ddns.sh
 
 .PNOHY: test-gist
 test-gist: build/id_ed25519
-	ssh pi@localhost -i ./build/id_ed25519.pub -p 5022 -o UserKnownHostsFile=./build/known_hosts bash < ./gist.sh
+	ssh pi@localhost -i ./build/id_ed25519 -p 5022 -o UserKnownHostsFile=./build/known_hosts bash < ./gist.sh
