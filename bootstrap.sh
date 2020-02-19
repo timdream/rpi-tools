@@ -48,14 +48,6 @@ sudo mount -t tmpfs -o nosuid,nodev tmpfs /var/lib/dhcpcd5 && \
 sudo rmdir /var/lib/dhcpcd5- && \
 echo "tmpfs  /var/lib/dhcpcd5  tmpfs  nosuid,nodev  0  0" | sudo tee -a /etc/fstab > /dev/null && \
 
-echo ">> Redirect /var/lib/sudo/ts to tmpfs" && \
-sudo mv /var/lib/sudo/ts /var/lib/sudo/ts- && sudo mkdir /var/lib/sudo/ts && \
-sudo mount -t tmpfs -o nosuid,nodev tmpfs /var/lib/sudo/ts && \
-[ ! -z "$(sudo ls -1 /var/lib/sudo/ts-)" ] && sudo mv /var/lib/sudo/ts-/* /var/lib/sudo/ts/ || true && \
-[ ! -z "$(sudo ls -a1 /var/lib/sudo/ts- | grep -e "^\.[^\.]")" ] && sudo mv /var/lib/sudo/ts-/.[!.]* /var/lib/sudo/ts/ || true && \
-sudo rmdir /var/lib/sudo/ts- && \
-echo "tmpfs  /var/lib/sudo/ts  tmpfs  nosuid,nodev  0  0" | sudo tee -a /etc/fstab > /dev/null && \
-
 echo ">> Redirect /var/log to tmpfs (restarts rsyslog)" && \
 sudo systemctl stop rsyslog.service && \
 sudo mv /var/log /var/log- && sudo mkdir /var/log && \
