@@ -101,7 +101,7 @@ fi
 mount -o remount,\"\$1\" /
 ERRNO=\$?
 if [ \$ERRNO != 0 ]; then
-    echo \$(date): \"\$1\" \"\$TAG\" \"<failed. lsof: \$(lsof +f -- / | tail -n+2 | awk '\$4 ~ /[wu]\$/ { print \$1 }' | uniq | xargs echo)>\" >> /var/log/remount.log
+    echo \$(date): \"\$1\" \"\$TAG\" \"<failed. lsof: \$(lsof +f -- / | tail -n+2 | awk '\$4 ~ /([wu]|DEL)\$/ { print \$1 }' | uniq | xargs echo)>\" >> /var/log/remount.log
     exit \$ERRNO
 fi
 
@@ -157,7 +157,7 @@ echo kernel.panic = 10 | sudo tee /etc/sysctl.d/01-panic.conf > /dev/null && \
 
 echo ">> Actually set the file system readonly" && \
 sudo mount -o remount,ro /boot && \
-sudo lsof +f -- / | awk '$4 ~ /[wu]$/ { print $0 }' && \
+sudo lsof +f -- / | awk '$4 ~ /([wu]|DEL)$/ { print $0 }' && \
 sudo mount -o remount,ro / && \
 
 echo ">> Done!"
