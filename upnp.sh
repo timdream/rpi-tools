@@ -23,7 +23,7 @@ printf \"LAN IP: %s\n\" \"\$__IP\" | sudo tee -a /dev/tty1 >> /var/log/upnp-cron
 [ -z \"\$__IP\" ] && exit
 
 # Print the external IP address
-__EXTERNAL_IP=\$(dig -4 @208.67.222.222 ANY myip.opendns.com +short)
+__EXTERNAL_IP=\$(curl -s https://api.ipify.org)
 printf \"External IP: %s\n\" \"\$__EXTERNAL_IP\" | sudo tee -a /dev/tty1 >> /var/log/upnp-crontab.log
 [ -z \"\$__EXTERNAL_IP\" ] && exit
 

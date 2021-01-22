@@ -67,7 +67,7 @@ This talks to OpenDNS and ask it to return the IP you connect to it.
 On **Raspberry Pi**:
 
 ```
-$ dig -4 @208.67.222.222 ANY myip.opendns.com +short
+$ curl -s https://api.ipify.org
 123.123.123.123
 ```
 

@@ -20,12 +20,12 @@ printf \"LAN IP: %s\n\" \"\$__IP\" | sudo tee -a /dev/tty1 >> /var/log/ddns-cron
 [ -z \"\$__IP\" ] && exit
 
 # Print the external IP address
-__EXTERNAL_IP=\$(dig -4 @208.67.222.222 ANY myip.opendns.com +short)
+__EXTERNAL_IP=\$(curl -s https://api.ipify.org)
 printf \"External IP: %s\n\" \"\$__EXTERNAL_IP\" | sudo tee -a /dev/tty1 >> /var/log/ddns-crontab.log
 [ -z \"\$__EXTERNAL_IP\" ] && exit
 
 # Dynamic DNS
-if [[ \"\$(dig -4 @208.67.222.222 A _________ +short)\" != \"\$__EXTERNAL_IP\" ]]; then
+if [[ \"\$(dig -4 A _________ +short)\" != \"\$__EXTERNAL_IP\" ]]; then
   echo -n \"Dynamic DNS: \" | sudo tee -a /dev/tty1 >> /var/log/ddns-crontab.log
   curl -s \"https://dynamicdns.park-your-domain.com/update?host=_________&domain=____________&password=___________________\" | sudo tee -a /dev/tty1 >> /var/log/ddns-crontab.log
   echo | sudo tee -a /dev/tty1 >> /var/log/ddns-crontab.log
