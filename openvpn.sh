@@ -7,14 +7,14 @@ sudo apt-get install -y dig && \
 
 echo ">> Stop OpenVPN UDP service" && \
 
-sudo systemctl stop openvpn@server.service && \
+sudo systemctl stop openvpn-server@server.service && \
 
 echo ">> Modify OpenVPN server config" && \
 
 sudo sed -i 's/ifconfig-pool-persist ipp.txt/ifconfig-pool-persist \/var\/tmp\/openvpn-ipp-udp.txt/' /etc/openvpn/server/server.conf && \
 sudo sed -i 's/status openvpn-status.log/status \/var\/tmp\/openvpn-status-udp.log/' /etc/openvpn/server/server.conf && \
 sudo sed -i '/local/d' /etc/openvpn/server/server.conf && \
-sudo sed -i 's/server 10.8.0.0 255.255.255.0/server 10.8.0.0 255.255.255.128/' /etc/openvpn/server-tcp/server.conf && \
+sudo sed -i 's/server 10.8.0.0 255.255.255.0/server 10.8.0.0 255.255.255.128/' /etc/openvpn/server/server.conf && \
 sudo rm -f /etc/openvpn/server/ipp.txt /etc/openvpn/server/openvpn-status.log && \
 
 echo ">> Modify OpenVPN client config" && \
@@ -26,12 +26,9 @@ sudo sed -i "s/^remote \(.*\)/&\n& tcp-client/" /etc/openvpn/server/client-commo
 
 echo ">> Copy OpenVPN UDP server config to TCP server" && \
 
-sudo cp -R /etc/openvpn/server /etc/openvpn/server-tcp && \
-sudo sed -i 's/udp/tcp/g' /etc/openvpn/server-tcp/server.conf && \
-sudo sed -i 's/server 10.8.0.0 255.255.255.128/server 10.8.0.128 255.255.255.128/' /etc/openvpn/server-tcp/server.conf && \
-
-# XXX duplicate because not sure which config OpenVPN will pickup
-sudo ln /etc/openvpn/server-tcp/server.conf /etc/openvpn/server-tcp/server-tcp.conf && \
+sudo cp /etc/openvpn/server/server.conf /etc/openvpn/server/server-tcp.conf && \
+sudo sed -i 's/udp/tcp/g' /etc/openvpn/server/server-tcp.conf && \
+sudo sed -i 's/server 10.8.0.0 255.255.255.128/server 10.8.0.128 255.255.255.128/' /etc/openvpn/server/server-tcp.conf && \
 
 echo ">> Enable and start OpenVPN TCP service" && \
 
